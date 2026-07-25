@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUPPLY CHAIN: The Gathering</title>
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <link rel="stylesheet" href="css/playtest.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <h1 class="site-title">SUPPLY CHAIN: The Gathering</h1>
+    <p class="site-subtitle">A Logistics Trading Card Game</p>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="gallery-view">Gallery</button>
+    <button class="nav-tab" data-tab="playtest-view">Playtest</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="app-content">
+    <!-- Gallery View -->
+    <section id="gallery-view" class="view-section active">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-row">
+          <span class="filter-label">Type:</span>
+          <button class="filter-btn" data-type="Infrastructure">Infrastructure</button>
+          <button class="filter-btn" data-type="Workforce">Workforce</button>
+          <button class="filter-btn" data-type="Fleet">Fleet</button>
+          <button class="filter-btn" data-type="Operations">Operations</button>
+          <button class="filter-btn" data-type="Disruptions">Disruptions</button>
+          <button class="filter-btn" data-type="Contracts">Contracts</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Rarity:</span>
+          <button class="filter-btn" data-rarity="Common">Common</button>
+          <button class="filter-btn" data-rarity="Uncommon">Uncommon</button>
+          <button class="filter-btn" data-rarity="Rare">Rare</button>
+          <button class="filter-btn" data-rarity="Mythic Rare">Mythic Rare</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Sort:</span>
+          <button class="sort-btn active" data-sort="number">Number</button>
+          <button class="sort-btn" data-sort="name">Name</button>
+          <button class="sort-btn" data-sort="cost">Cost</button>
+          <input type="text" id="gallery-search" class="search-input" placeholder="Search cards by name...">
+          <span id="card-count" class="card-count">Showing 200 of 200 cards</span>
+        </div>
+      </div>
+
+      <!-- Card Grid -->
+      <div id="card-grid" class="card-grid"></div>
+
+      <!-- Card Detail Modal -->
+      <div id="card-modal" class="modal-overlay">
+        <div class="modal-content">
+          <button class="modal-close" title="Close">&times;</button>
+          <div id="modal-card-content"></div>
+          <div id="modal-details" class="modal-details"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Playtest View -->
+    <section id="playtest-view" class="view-section">
+      <!-- Setup Screen -->
+      <div id="playtest-setup">
+        <h2 class="setup-title">Playtest Mode</h2>
+        <p class="setup-subtitle">2-Player Hot-Seat - Test your supply chain strategies</p>
+        <div class="setup-options">
+          <div class="setup-option">
+            <label>Deck Type</label>
+            <select id="deck-type">
+              <option value="random">Random Balanced Deck (40 cards)</option>
+            </select>
+          </div>
+          <div class="setup-option">
+            <label>Starting Health</label>
+            <span>20</span>
+          </div>
+          <div class="setup-option">
+            <label>Win Condition</label>
+            <span>10 FP or reduce opponent to 0 Health</span>
+          </div>
+        </div>
+        <div class="setup-info">
+          Each player gets a shuffled 40-card deck with balanced card types:<br>
+          8+ Infrastructure, 8+ Workforce, 6+ Fleet, 8+ Operations, 5+ Disruptions, 3+ Contracts
+        </div>
+        <button class="btn-start-game" onclick="Playtest.startGame()">Start Game</button>
+      </div>
+
+      <!-- Game Board -->
+      <div id="playtest-board" style="display:none;">
+        <!-- Turn Info & Controls -->
+        <div class="turn-info-bar">
+          <span id="turn-info">Turn 1 - Player 1 - Upkeep</span>
+          <div class="game-controls">
+            <button id="btn-next-phase" class="btn-primary" onclick="Playtest.advancePhase()">Next Phase</button>
+            <button id="btn-end-turn" onclick="Playtest.endTurn()">End Turn</button>
+            <button class="btn-danger" onclick="Playtest.newGame()">New Game</button>
+          </div>
+        </div>
+
+        <!-- Phase Bar -->
+        <div id="phase-bar"></div>
+
+        <!-- Opponent Info -->
+        <div class="player-info" id="p2-info">
+          <span class="player-name" id="p2-name">Player 2</span>
+          <div class="player-stat">
+            <span class="stat-label">HP</span>
+            <span class="stat-value health" id="p2-health">20</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">FP</span>
+            <span class="stat-value fp" id="p2-fp">0</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">Deck</span>
+            <span class="stat-value deck-count" id="p2-deck-count">33</span>
+          </div>
+          <div class="player-resources" id="p2-resources"></div>
+        </div>
+
+        <!-- Opponent Field -->
+        <div class="game-field opponent-field">
+          <div class="zone">
+            <div class="zone-label">Source Zone (Opp)</div>
+            <div class="zone-cards" id="opp-source-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Network Zone (Opp)</div>
+            <div class="zone-cards" id="opp-network-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Customer Zone (Opp)</div>
+            <div class="zone-cards" id="opp-customer-zone"></div>
+          </div>
+        </div>
+
+        <!-- Player Field -->
+        <div class="game-field">
+          <div class="zone">
+            <div class="zone-label">Source Zone</div>
+            <div class="zone-cards" id="source-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Network Zone</div>
+            <div class="zone-cards" id="network-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Customer Zone</div>
+            <div class="zone-cards" id="customer-zone"></div>
+          </div>
+        </div>
+
+        <!-- Contracts -->
+        <div class="contracts-section">
+          <h4>Active Contracts</h4>
+          <div id="active-contracts"></div>
+        </div>
+
+        <!-- Current Player Info -->
+        <div class="player-info" id="p1-info">
+          <span class="player-name" id="p1-name">Player 1</span>
+          <div class="player-stat">
+            <span class="stat-label">HP</span>
+            <span class="stat-value health" id="p1-health">20</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">FP</span>
+            <span class="stat-value fp" id="p1-fp">0</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">Deck</span>
+            <span class="stat-value deck-count" id="p1-deck-count">33</span>
+          </div>
+          <div class="player-resources" id="p1-resources"></div>
+        </div>
+
+        <!-- Hand -->
+        <div class="hand-section">
+          <div class="hand-section-label">Your Hand</div>
+          <div id="player-hand"></div>
+        </div>
+
+        <!-- Game Log -->
+        <div class="log-section" id="game-log"></div>
+      </div>
+
+      <!-- Message Toast -->
+      <div id="playtest-message"></div>
+
+      <!-- Win Overlay -->
+      <div id="win-overlay">
+        <h2 class="win-title">Victory!</h2>
+        <p class="win-subtitle"></p>
+        <button class="btn-new-game" onclick="Playtest.newGame()">Play Again</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts (loaded in dependency order) -->
+  <script src="js/card-data.js"></script>
+  <script src="js/svg-art.js"></script>
+  <script src="js/card-renderer.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/playtest.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Gallery.init();
+      Playtest.init();
+    });
+  </script>
+</body>
+</html>

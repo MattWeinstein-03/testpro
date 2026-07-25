@@ -1,0 +1,671 @@
+/* ==========================================================================
+   SUPPLY CHAIN: The Gathering - Playtest Mode Styles
+   Full game board layout with dark theme
+   ========================================================================== */
+
+/* ---------- Setup Screen ---------- */
+#playtest-setup {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  text-align: center;
+}
+
+.setup-title {
+  font-size: 28px;
+  color: #FFD700;
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.setup-subtitle {
+  font-size: 14px;
+  color: #8888aa;
+  margin-bottom: 32px;
+}
+
+.setup-options {
+  margin-bottom: 32px;
+}
+
+.setup-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setup-option label {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.setup-option select,
+.setup-option input {
+  background: rgba(20, 20, 40, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #eee;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.setup-info {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.btn-start-game {
+  padding: 14px 48px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-start-game:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* ---------- Game Board ---------- */
+#playtest-board {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto auto;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  min-height: calc(100vh - 140px);
+  padding: 8px 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ---------- Turn Info Bar ---------- */
+.turn-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(10, 10, 25, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+#turn-info {
+  color: #FFD700;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.game-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.game-controls button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(30, 30, 50, 0.8);
+  color: #ddd;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-controls button:hover:not(:disabled) {
+  background: rgba(60, 60, 90, 0.8);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+}
+
+.game-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.game-controls button.btn-primary {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+}
+
+.game-controls button.btn-primary:hover:not(:disabled) {
+  background: rgba(255, 215, 0, 0.3);
+}
+
+.game-controls button.btn-danger {
+  border-color: rgba(255, 80, 80, 0.4);
+  color: #ff8888;
+}
+
+.game-controls button.btn-danger:hover:not(:disabled) {
+  background: rgba(255, 80, 80, 0.15);
+}
+
+/* ---------- Phase Bar ---------- */
+#phase-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(10, 10, 25, 0.6);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.phase-step {
+  flex: 1;
+  text-align: center;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  background: rgba(20, 20, 40, 0.5);
+  border-radius: 4px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.phase-step.done {
+  color: #4a9;
+  background: rgba(68, 170, 153, 0.1);
+  border-color: rgba(68, 170, 153, 0.2);
+}
+
+.phase-step.active {
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+/* ---------- Player Info Bar ---------- */
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: rgba(15, 15, 30, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.player-info.active-player {
+  border-color: rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eee;
+  min-width: 80px;
+}
+
+.player-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.stat-value.health {
+  color: #ff6b6b;
+}
+
+.stat-value.fp {
+  color: #51cf66;
+}
+
+.stat-value.deck-count {
+  color: #74b9ff;
+  font-size: 12px;
+}
+
+.player-resources {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.res-counter {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.res-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #222;
+}
+
+.res-capital .res-icon { background: #FFD700; }
+.res-labor .res-icon { background: #CD853F; }
+.res-fuel .res-icon { background: #FF6347; }
+.res-data .res-icon { background: #00CED1; }
+.res-time .res-icon { background: #DDA0DD; }
+
+.res-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ddd;
+  min-width: 12px;
+  text-align: center;
+}
+
+/* ---------- Game Field (Zones) ---------- */
+.game-field {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(5, 5, 15, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  min-height: 160px;
+}
+
+.game-field.opponent-field {
+  opacity: 0.75;
+  border-color: rgba(255, 80, 80, 0.1);
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: rgba(15, 15, 35, 0.5);
+  border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  min-height: 120px;
+}
+
+.zone-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.zone-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.zone-empty {
+  color: #444;
+  font-size: 11px;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+.zone-card {
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.zone-card.clickable {
+  cursor: pointer;
+}
+
+.zone-card.clickable:hover {
+  transform: translateY(-4px);
+}
+
+.zone-card.clickable::after {
+  content: 'Click';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #FFD700;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1px 4px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.zone-card.clickable:hover::after {
+  opacity: 1;
+}
+
+.attacked-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 8px;
+  color: #fff;
+  background: rgba(255, 80, 80, 0.8);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* ---------- Contracts Section ---------- */
+.contracts-section {
+  padding: 6px 12px;
+  background: rgba(10, 10, 25, 0.4);
+  border-radius: 6px;
+}
+
+.contracts-section h4 {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px 0;
+}
+
+#active-contracts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contracts-empty {
+  color: #444;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.contract-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(81, 207, 102, 0.08);
+  border: 1px solid rgba(81, 207, 102, 0.3);
+  border-radius: 4px;
+}
+
+.contract-name {
+  font-size: 11px;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.contract-reward {
+  font-size: 11px;
+  color: #51cf66;
+  font-weight: 700;
+}
+
+/* ---------- Hand Area ---------- */
+.hand-section {
+  padding: 8px;
+  background: rgba(10, 10, 30, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.hand-section-label {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  padding-left: 8px;
+}
+
+#player-hand {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hand-card {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hand-card.playable {
+  cursor: pointer;
+}
+
+.hand-card.playable:hover {
+  transform: translateY(-12px) scale(1.05);
+  z-index: 10;
+}
+
+.hand-card.unplayable {
+  opacity: 0.6;
+  filter: grayscale(30%);
+}
+
+.card-overlay-cost {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #ff6b6b;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hand-empty {
+  color: #555;
+  font-size: 13px;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* ---------- Game Log ---------- */
+.log-section {
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.log-entry {
+  font-size: 11px;
+  color: #888;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  font-family: 'Courier New', monospace;
+}
+
+.log-entry:last-child {
+  color: #aaa;
+  border-bottom: none;
+}
+
+/* ---------- Message Toast ---------- */
+#playtest-message {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(255, 80, 80, 0.95);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+#playtest-message.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- Win Overlay ---------- */
+#win-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#win-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.win-title {
+  font-size: 48px;
+  color: #FFD700;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.win-subtitle {
+  font-size: 18px;
+  color: #ccc;
+  margin-bottom: 32px;
+}
+
+.btn-new-game {
+  padding: 12px 36px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.btn-new-game:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  #playtest-board {
+    padding: 4px;
+    gap: 6px;
+  }
+
+  .game-field {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .player-info {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .player-resources {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  #player-hand {
+    justify-content: flex-start;
+  }
+
+  #phase-bar {
+    overflow-x: auto;
+  }
+
+  .phase-step {
+    min-width: 70px;
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  #playtest-setup {
+    margin: 16px;
+    padding: 24px;
+  }
+
+  .setup-title {
+    font-size: 22px;
+  }
+
+  .turn-info-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .game-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
