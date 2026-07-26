@@ -1,0 +1,505 @@
+/* ==========================================================================
+   SUPPLY CHAIN: The Gathering - Gallery / Collection View Styles
+   ========================================================================== */
+
+/* ---------- Page Base ---------- */
+body {
+  margin: 0;
+  padding: 0;
+  background: #0f0f1e;
+  color: #e0dcd4;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  text-align: center;
+  padding: 24px 16px 12px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.site-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #FFD700 0%, #FF8C00 50%, #FFD700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+.site-subtitle {
+  font-size: 13px;
+  color: #8888aa;
+  margin: 4px 0 0;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+/* ---------- Navigation Tabs ---------- */
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 16px 0;
+  background: #0f0f1e;
+}
+
+.nav-tab {
+  padding: 10px 28px;
+  background: #1c1c30;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: #8888aa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.nav-tab:hover {
+  background: #252540;
+  color: #c0b8a8;
+}
+
+.nav-tab.active {
+  background: #1a1a2e;
+  color: #FFD700;
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* ---------- Main Content ---------- */
+#app-content {
+  background: #1a1a2e;
+  min-height: calc(100vh - 140px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.view-section {
+  display: none;
+  padding: 20px 16px;
+}
+
+.view-section.active {
+  display: block;
+}
+
+/* ---------- Filter Bar ---------- */
+.filter-bar {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  padding: 16px;
+  background: rgba(20, 20, 40, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-row:last-child {
+  margin-bottom: 0;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8888aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 50px;
+}
+
+.filter-btn {
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(30, 30, 50, 0.8);
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(60, 60, 90, 0.8);
+  color: #ddd;
+}
+
+.filter-btn.active {
+  color: #fff;
+  border-color: currentColor;
+}
+
+/* Type filter button colors */
+.filter-btn[data-type="Infrastructure"].active { background: rgba(112, 128, 144, 0.4); color: #708090; border-color: #708090; }
+.filter-btn[data-type="Workforce"].active { background: rgba(218, 165, 32, 0.3); color: #DAA520; border-color: #DAA520; }
+.filter-btn[data-type="Fleet"].active { background: rgba(65, 105, 225, 0.3); color: #4169E1; border-color: #4169E1; }
+.filter-btn[data-type="Operations"].active { background: rgba(46, 139, 87, 0.3); color: #2E8B57; border-color: #2E8B57; }
+.filter-btn[data-type="Disruptions"].active { background: rgba(220, 20, 60, 0.3); color: #DC143C; border-color: #DC143C; }
+.filter-btn[data-type="Contracts"].active { background: rgba(139, 0, 139, 0.3); color: #8B008B; border-color: #8B008B; }
+
+/* Rarity filter button colors */
+.filter-btn[data-rarity="Common"].active { background: rgba(255, 255, 255, 0.15); color: #fff; border-color: #fff; }
+.filter-btn[data-rarity="Uncommon"].active { background: rgba(65, 105, 225, 0.3); color: #4169E1; border-color: #4169E1; }
+.filter-btn[data-rarity="Rare"].active { background: rgba(255, 215, 0, 0.3); color: #FFD700; border-color: #FFD700; }
+.filter-btn[data-rarity="Mythic Rare"].active { background: rgba(255, 140, 0, 0.3); color: #FF8C00; border-color: #FF8C00; }
+
+/* Search and sort */
+.search-input {
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+  padding: 7px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(20, 20, 40, 0.9);
+  color: #e0dcd4;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-input:focus {
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.sort-btn {
+  padding: 5px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(30, 30, 50, 0.8);
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+  background: rgba(60, 60, 90, 0.8);
+  color: #ddd;
+}
+
+.sort-btn.active {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* Card count indicator */
+.card-count {
+  font-size: 12px;
+  color: #8888aa;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ---------- Card Grid ---------- */
+.card-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  padding: 0 8px;
+}
+
+/* ---------- Modal Overlay ---------- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-details {
+  max-width: 360px;
+  padding: 16px;
+  background: rgba(20, 20, 40, 0.9);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-details h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #f0e6d3;
+}
+
+.modal-details p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.modal-details .detail-label {
+  color: #8888aa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.modal-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.keyword-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #2a2a3e;
+  color: #ddd;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background: #4a4a5e;
+}
+
+/* ---------- Responsive Breakpoints ---------- */
+@media (max-width: 600px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-title {
+    font-size: 22px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: none;
+  }
+
+  .card-count {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1201px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+/* ---------- Transition Animations ---------- */
+.card-frame {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ===========================================================================
+   Rulebook view. Rendered from the frozen glossary, so this page and the engine
+   cannot disagree. This is the layout that becomes the printed rules insert.
+   =========================================================================== */
+#rulebook-view {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.rulebook-section {
+  margin-bottom: 28px;
+  padding: 16px 20px;
+  background: rgba(20, 20, 45, 0.55);
+  border: 1px solid rgba(120, 130, 190, 0.28);
+  border-radius: 8px;
+}
+
+.rulebook-section h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFD700;
+}
+
+.rulebook-section p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #c8d0f0;
+}
+
+.rulebook-section strong { color: #fff; }
+
+.rulebook-list,
+.rulebook-phases {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.rulebook-list li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #c8d0f0;
+  margin-bottom: 6px;
+}
+
+
+.rulebook-phases {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.rulebook-phases li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #e8ecff;
+  padding: 6px 10px;
+  background: rgba(35, 35, 70, 0.7);
+  border-radius: 5px;
+}
+
+.phase-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0b0b16;
+  background: #FFD700;
+  border-radius: 50%;
+}
+
+.rulebook-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rulebook-chip {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8ecff;
+  padding: 4px 10px;
+  background: rgba(45, 45, 85, 0.85);
+  border: 1px solid rgba(140, 150, 210, 0.4);
+  border-radius: 12px;
+}
+
+
+.rulebook-keywords {
+  margin: 0;
+}
+
+.rulebook-keywords dt {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.rulebook-keywords dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #c8d0f0;
+  padding-left: 12px;
+  border-left: 2px solid rgba(255, 215, 0, 0.35);
+}

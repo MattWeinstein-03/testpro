@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUPPLY CHAIN: The Gathering</title>
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/gallery.css">
+  <link rel="stylesheet" href="css/playtest.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <h1 class="site-title">SUPPLY CHAIN: The Gathering</h1>
+    <p class="site-subtitle">A Logistics Trading Card Game</p>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="gallery-view">Gallery</button>
+    <button class="nav-tab" data-tab="playtest-view">Playtest</button>
+    <button class="nav-tab" data-tab="rulebook-view">Rules</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="app-content">
+    <!-- Gallery View -->
+    <section id="gallery-view" class="view-section active">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-row">
+          <span class="filter-label">Type:</span>
+          <button class="filter-btn" data-type="Infrastructure">Infrastructure</button>
+          <button class="filter-btn" data-type="Workforce">Workforce</button>
+          <button class="filter-btn" data-type="Fleet">Fleet</button>
+          <button class="filter-btn" data-type="Operations">Operations</button>
+          <button class="filter-btn" data-type="Disruptions">Disruptions</button>
+          <button class="filter-btn" data-type="Contracts">Contracts</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Rarity:</span>
+          <button class="filter-btn" data-rarity="Common">Common</button>
+          <button class="filter-btn" data-rarity="Uncommon">Uncommon</button>
+          <button class="filter-btn" data-rarity="Rare">Rare</button>
+          <button class="filter-btn" data-rarity="Mythic Rare">Mythic Rare</button>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Sort:</span>
+          <button class="sort-btn active" data-sort="number">Number</button>
+          <button class="sort-btn" data-sort="name">Name</button>
+          <button class="sort-btn" data-sort="cost">Cost</button>
+          <input type="text" id="gallery-search" class="search-input" placeholder="Search cards by name...">
+          <span id="card-count" class="card-count">Showing 200 of 200 cards</span>
+        </div>
+      </div>
+
+      <!-- Card Grid -->
+      <div id="card-grid" class="card-grid"></div>
+
+      <!-- Card Detail Modal -->
+      <div id="card-modal" class="modal-overlay">
+        <div class="modal-content">
+          <button class="modal-close" title="Close">&times;</button>
+          <div id="modal-card-content"></div>
+          <div id="modal-details" class="modal-details"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Playtest View -->
+    <section id="playtest-view" class="view-section">
+      <!-- Setup Screen -->
+      <div id="playtest-setup">
+        <h2 class="setup-title">Playtest Mode</h2>
+        <p class="setup-subtitle">2-Player Hot-Seat - Test your supply chain strategies</p>
+        <div class="setup-options">
+          <div class="setup-option">
+            <label for="deck-p1">Player 1 Deck</label>
+            <select id="deck-p1"></select>
+          </div>
+          <div class="setup-option">
+            <label for="deck-p2">Player 2 Deck</label>
+            <select id="deck-p2"></select>
+          </div>
+          <div class="setup-option">
+            <label for="game-seed">Seed (blank = random)</label>
+            <input type="text" id="game-seed" class="search-input" placeholder="e.g. print-test-4">
+          </div>
+          <div class="setup-option">
+            <label for="pass-device-toggle">Hide hand on turn change</label>
+            <input type="checkbox" id="pass-device-toggle" checked>
+          </div>
+          <div class="setup-option">
+            <label>Starting Health</label>
+            <span>20</span>
+          </div>
+          <div class="setup-option">
+            <label>Win Condition</label>
+            <span>10 FP, opponent at 0 Health, or opponent decks out</span>
+          </div>
+        </div>
+        <div class="setup-info">
+          Each player gets a shuffled 40-card deck built to the chosen archetype's
+          type minimums. Entering the same seed with the same two archetypes
+          replays an identical game, which is how balance results are compared.
+        </div>
+        <button class="btn-start-game" onclick="Playtest.startGame()">Start Game</button>
+      </div>
+
+      <!-- Game Board -->
+      <div id="playtest-board" style="display:none;">
+        <!-- Turn Info & Controls -->
+        <div class="turn-info-bar">
+          <span id="turn-info">Turn 1 - Player 1 - Upkeep</span>
+          <span id="seed-readout" class="seed-readout"></span>
+          <div class="game-controls">
+            <button id="btn-next-phase" class="btn-primary" onclick="Playtest.advancePhase()">Next Phase</button>
+            <button id="btn-end-turn" onclick="Playtest.endTurn()">End Turn</button>
+            <button class="btn-danger" onclick="Playtest.newGame()">New Game</button>
+          </div>
+        </div>
+
+        <!-- Phase Bar -->
+        <div id="phase-bar"></div>
+
+        <!-- Requisition: the safety valve against a hand of uncastable cards -->
+        <div id="requisition-bar" style="display:none;"></div>
+
+        <!-- Opponent Info -->
+        <div class="player-info" id="p2-info">
+          <span class="player-name" id="p2-name">Player 2</span>
+          <div class="player-stat">
+            <span class="stat-label">HP</span>
+            <span class="stat-value health" id="p2-health">20</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">FP</span>
+            <span class="stat-value fp" id="p2-fp">0</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">Deck</span>
+            <span class="stat-value deck-count" id="p2-deck-count">33</span>
+          </div>
+          <div class="player-resources" id="p2-resources"></div>
+        </div>
+
+        <!-- Opponent Field -->
+        <div class="game-field opponent-field">
+          <div class="zone">
+            <div class="zone-label">Source Zone (Opp)</div>
+            <div class="zone-cards" id="opp-source-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Network Zone (Opp)</div>
+            <div class="zone-cards" id="opp-network-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Customer Zone (Opp)</div>
+            <div class="zone-cards" id="opp-customer-zone"></div>
+          </div>
+        </div>
+
+        <!-- Player Field -->
+        <div class="game-field">
+          <div class="zone">
+            <div class="zone-label">Source Zone</div>
+            <div class="zone-cards" id="source-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Network Zone</div>
+            <div class="zone-cards" id="network-zone"></div>
+          </div>
+          <div class="zone">
+            <div class="zone-label">Customer Zone</div>
+            <div class="zone-cards" id="customer-zone"></div>
+          </div>
+        </div>
+
+        <!-- Blocker declaration prompt (defender acts here) -->
+        <div id="combat-prompt" style="display:none;"></div>
+
+        <!-- Contracts: every clause shown with met/unmet state -->
+        <div class="contracts-section">
+          <h4>Active Contracts</h4>
+          <div id="active-contracts"></div>
+        </div>
+
+        <!-- Current Player Info -->
+        <div class="player-info" id="p1-info">
+          <span class="player-name" id="p1-name">Player 1</span>
+          <div class="player-stat">
+            <span class="stat-label">HP</span>
+            <span class="stat-value health" id="p1-health">20</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">FP</span>
+            <span class="stat-value fp" id="p1-fp">0</span>
+          </div>
+          <div class="player-stat">
+            <span class="stat-label">Deck</span>
+            <span class="stat-value deck-count" id="p1-deck-count">33</span>
+          </div>
+          <div class="player-resources" id="p1-resources"></div>
+        </div>
+
+        <!-- Hand -->
+        <div class="hand-section">
+          <div class="hand-section-label">Your Hand</div>
+          <div id="player-hand"></div>
+        </div>
+
+        <!-- Game Log -->
+        <div class="log-section" id="game-log"></div>
+
+        <!-- Pass-device interstitial: hot-seat hands must not be exposed
+             across the turn transition. -->
+        <div id="pass-device" style="display:none;">
+          <div class="pass-device-box">
+            <h2>Pass the device</h2>
+            <p>Hand it to <strong id="pass-device-name">Player 2</strong>.</p>
+            <button class="btn-primary" id="btn-pass-continue">I am ready</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Click-to-zoom for any card on the board or in hand -->
+      <div id="zoom-overlay">
+        <div class="zoom-content">
+          <button class="modal-close" id="zoom-close" title="Close">&times;</button>
+          <div id="zoom-body"></div>
+        </div>
+      </div>
+
+      <!-- Message Toast -->
+      <div id="playtest-message"></div>
+
+      <!-- Win Overlay -->
+      <div id="win-overlay">
+        <h2 class="win-title">Victory!</h2>
+        <p class="win-subtitle"></p>
+        <button class="btn-new-game" onclick="Playtest.newGame()">Play Again</button>
+      </div>
+    </section>
+
+    <!-- Rulebook View: the same frozen glossary the engine reads, which is what
+         becomes the printed rulebook insert. -->
+    <section id="rulebook-view" class="view-section">
+      <div id="rulebook-content"></div>
+    </section>
+  </main>
+
+  <!-- Scripts (loaded in dependency order) -->
+  <!-- Rules vocabulary and pure core first: nothing below may define a rule. -->
+  <script src="js/glossary.js"></script>
+  <script src="js/rng.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/card-schema.js"></script>
+  <script src="js/card-data.js"></script>
+  <script src="js/rules.js"></script>
+  <!-- View layer: renders state, never mutates it. -->
+  <script src="js/svg-art.js"></script>
+  <script src="js/card-renderer.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/playtest.js"></script>
+  <script src="js/rulebook.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Validate the set at the load boundary so a typo'd requirement key is a
+      // reported error rather than a contract that is silently easier.
+      var report = CardSchema.validateSet(CardData);
+      if (!report.ok) {
+        console.error('Card set failed validation:', report.errors);
+      }
+      if (report.warnings.length) {
+        console.warn('Card set warnings:', report.warnings);
+      }
+      Gallery.init();
+      Playtest.init();
+      Rulebook.init();
+    });
+  </script>
+</body>
+</html>

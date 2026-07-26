@@ -1,0 +1,6 @@
+# Tooling only. The site itself is dependency-free static HTML/CSS/JS and is
+# served straight from the repo root.
+node_modules/
+package-lock.json
+npm-debug.log*
+.DS_Store

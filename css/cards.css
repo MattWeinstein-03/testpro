@@ -1,0 +1,323 @@
+/* ==========================================================================
+   SUPPLY CHAIN: The Gathering - Card Frame Styles
+   Premium TCG card template design
+   ========================================================================== */
+
+/* ---------- CSS Custom Properties ---------- */
+:root {
+  /* Card type colors */
+  --color-infrastructure: #708090;
+  --color-workforce: #DAA520;
+  --color-fleet: #4169E1;
+  --color-operations: #2E8B57;
+  --color-disruptions: #DC143C;
+  --color-contracts: #8B008B;
+
+  /* Rarity colors */
+  --rarity-common: #FFFFFF;
+  --rarity-uncommon: #4169E1;
+  --rarity-rare: #FFD700;
+  --rarity-mythic: #FF8C00;
+
+  /* Resource icon colors */
+  --res-capital: #FFD700;
+  --res-labor: #CD853F;
+  --res-fuel: #FF6347;
+  --res-data: #00CED1;
+  --res-time: #DDA0DD;
+
+  /* Card dimensions */
+  --card-width: 250px;
+  --card-height: 350px;
+  --card-border-width: 6px;
+  --card-radius: 12px;
+}
+
+/* ---------- Card Frame Base ---------- */
+.card-frame {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: var(--card-radius);
+  border: var(--card-border-width) solid #555;
+  background: linear-gradient(180deg, #1c1c2e 0%, #0d0d1a 100%);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.card-frame:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* ---------- Card Type Border Colors ---------- */
+.card-infrastructure {
+  border-color: var(--color-infrastructure);
+}
+.card-infrastructure:hover {
+  box-shadow: 0 0 20px rgba(112, 128, 144, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-workforce {
+  border-color: var(--color-workforce);
+}
+.card-workforce:hover {
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-fleet {
+  border-color: var(--color-fleet);
+}
+.card-fleet:hover {
+  box-shadow: 0 0 20px rgba(65, 105, 225, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-operations {
+  border-color: var(--color-operations);
+}
+.card-operations:hover {
+  box-shadow: 0 0 20px rgba(46, 139, 87, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-disruptions {
+  border-color: var(--color-disruptions);
+}
+.card-disruptions:hover {
+  box-shadow: 0 0 20px rgba(220, 20, 60, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-contracts {
+  border-color: var(--color-contracts);
+}
+.card-contracts:hover {
+  box-shadow: 0 0 20px rgba(139, 0, 139, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Card Header (Name Bar) ---------- */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #2a2a3e 0%, #1e1e30 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 28px;
+  gap: 4px;
+}
+
+.card-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f0e6d3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  flex: 1;
+  min-width: 0;
+}
+
+.card-cost {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.cost-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.cost-capital { background: radial-gradient(circle at 30% 30%, #fff3a1, var(--res-capital)); }
+.cost-labor { background: radial-gradient(circle at 30% 30%, #e8c89a, var(--res-labor)); }
+.cost-fuel { background: radial-gradient(circle at 30% 30%, #ff9a8a, var(--res-fuel)); }
+.cost-data { background: radial-gradient(circle at 30% 30%, #7fffff, var(--res-data)); }
+.cost-time { background: radial-gradient(circle at 30% 30%, #f0d4f0, var(--res-time)); }
+
+/* ---------- Card Art Frame ---------- */
+.card-art {
+  position: relative;
+  height: 140px;
+  margin: 4px 6px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+  background: #0a0a14;
+}
+
+.card-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- Card Type Line ---------- */
+.card-type-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 8px;
+  margin: 0 6px;
+  background: linear-gradient(90deg, rgba(40, 40, 60, 0.9) 0%, rgba(30, 30, 50, 0.9) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  font-size: 9px;
+  color: #c0b8a8;
+  min-height: 20px;
+}
+
+.card-type-text {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.rarity-gem {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -5px;
+  margin-top: -5px;
+}
+
+.rarity-common { background: radial-gradient(circle at 30% 30%, #fff, #ccc); }
+.rarity-uncommon { background: radial-gradient(circle at 30% 30%, #6e9fff, #4169E1); }
+.rarity-rare { background: radial-gradient(circle at 30% 30%, #fff5a0, #FFD700); box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); }
+.rarity-mythic { background: radial-gradient(circle at 30% 30%, #ffbf6e, #FF8C00); box-shadow: 0 0 8px rgba(255, 140, 0, 0.6); }
+
+/* ---------- Rules Text Box ---------- */
+.card-text-box {
+  flex: 1;
+  margin: 4px 6px;
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #f5eed6 0%, #e8dfc4 50%, #ddd4b4 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(139, 119, 80, 0.4);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  font-size: 9px;
+  line-height: 1.35;
+  color: #2a2420;
+  min-height: 60px;
+}
+
+.card-text-box::-webkit-scrollbar {
+  width: 4px;
+}
+
+.card-text-box::-webkit-scrollbar-thumb {
+  background: rgba(139, 119, 80, 0.5);
+  border-radius: 2px;
+}
+
+.card-ability {
+  margin-bottom: 4px;
+}
+
+.card-keyword {
+  font-weight: 700;
+  color: #1a1410;
+}
+
+.card-flavor {
+  font-style: italic;
+  color: #5a4e3e;
+  border-top: 1px solid rgba(139, 119, 80, 0.3);
+  margin-top: 4px;
+  padding-top: 4px;
+  font-size: 8px;
+}
+
+/* ---------- Card Stats Footer ---------- */
+.card-stats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2px 8px 4px;
+  min-height: 22px;
+}
+
+.stat-badge {
+  background: linear-gradient(180deg, #3a3a4e 0%, #2a2a3e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f0e6d3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Card Footer (Number) ---------- */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 4px;
+  font-size: 7px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.card-number {
+  font-family: 'Courier New', monospace;
+}
+
+/* ---------- Size Variants ---------- */
+.card-frame.card-small {
+  --card-width: 180px;
+  --card-height: 252px;
+  --card-border-width: 4px;
+  --card-radius: 8px;
+}
+
+.card-frame.card-small .card-name { font-size: 9px; }
+.card-frame.card-small .card-art { height: 100px; }
+.card-frame.card-small .card-text-box { font-size: 7px; min-height: 40px; }
+.card-frame.card-small .cost-icon { width: 12px; height: 12px; font-size: 7px; }
+.card-frame.card-small .card-type-line { font-size: 7px; }
+.card-frame.card-small .rarity-gem { width: 7px; height: 7px; margin-left: -3.5px; margin-top: -3.5px; }
+.card-frame.card-small .stat-badge { font-size: 9px; padding: 1px 5px; }
+
+.card-frame.card-large {
+  --card-width: 350px;
+  --card-height: 490px;
+  --card-border-width: 8px;
+  --card-radius: 16px;
+}
+
+.card-frame.card-large .card-name { font-size: 15px; }
+.card-frame.card-large .card-header { padding: 8px 12px; }
+.card-frame.card-large .card-art { height: 200px; margin: 6px 10px; }
+.card-frame.card-large .card-text-box { font-size: 12px; line-height: 1.5; margin: 6px 10px; padding: 10px 12px; }
+.card-frame.card-large .cost-icon { width: 22px; height: 22px; font-size: 12px; }
+.card-frame.card-large .card-type-line { font-size: 11px; margin: 0 10px; padding: 5px 12px; }
+.card-frame.card-large .rarity-gem { width: 14px; height: 14px; margin-left: -7px; margin-top: -7px; }
+.card-frame.card-large .stat-badge { font-size: 15px; padding: 3px 12px; }
+.card-frame.card-large .card-footer { font-size: 9px; padding: 0 12px 6px; }
+.card-frame.card-large .card-flavor { font-size: 10px; }
