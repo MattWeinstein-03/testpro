@@ -138,10 +138,26 @@
     return shapes;
   }
 
-  function drawFleet(rng, palette) {
+  /**
+   * Fleet artwork follows the card's printed subtype. It used to be chosen from
+   * the RNG, so Ship cards frequently showed a truck and contradicted their own
+   * type line - which matters a great deal once these are printed.
+   */
+  function fleetForm(subtype) {
+    switch (subtype) {
+      case 'Ship': return 'ship';
+      case 'Air': return 'air';
+      case 'Drone': return 'air';
+      case 'Rail': return 'ground';
+      case 'Fixed': return 'ground';
+      default: return 'ground';
+    }
+  }
+
+  function drawFleet(rng, palette, subtype) {
     var shapes = '';
-    var vehicleType = rng();
-    if (vehicleType < 0.33) {
+    var form = fleetForm(subtype);
+    if (form === 'ground') {
       // Truck/vehicle
       var tx = 50 + rng() * 50;
       var ty = 100 + rng() * 30;
@@ -155,7 +171,7 @@
       // Road
       shapes += '<rect x="0" y="160" width="300" height="40" fill="#34495e"/>';
       shapes += '<line x1="0" y1="178" x2="300" y2="178" stroke="#f1c40f" stroke-width="2" stroke-dasharray="15,10"/>';
-    } else if (vehicleType < 0.66) {
+    } else if (form === 'ship') {
       // Ship
       var sx = 30;
       var sy = 90;
@@ -383,7 +399,7 @@
         svg += drawWorkforce(rng, palette);
         break;
       case 'Fleet':
-        svg += drawFleet(rng, palette);
+        svg += drawFleet(rng, palette, card.subtype);
         break;
       case 'Operations':
         svg += drawOperations(rng, palette);

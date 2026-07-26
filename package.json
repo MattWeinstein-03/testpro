@@ -1,0 +1,17 @@
+{
+  "name": "supply-chain-tcg",
+  "version": "0.2.0",
+  "private": true,
+  "description": "SUPPLY CHAIN: The Gathering - card set, print-facing data, gallery and playtest engine. The site itself is dependency-free static HTML/CSS/JS; everything below is tooling only.",
+  "scripts": {
+    "test": "node sim/test.js",
+    "sim": "node sim/simulate.js",
+    "diagnose": "node sim/diagnose.js",
+    "smoke": "node sim/smoke-dom.js",
+    "build:cards": "node tools/build-card-data.js",
+    "verify": "node sim/test.js && node sim/smoke-dom.js && node sim/simulate.js"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

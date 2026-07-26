@@ -1,636 +1,157 @@
+/**
+ * Playtest view.
+ *
+ * This file renders state and dispatches actions. It holds NO rules: every
+ * decision goes through Rules.legalActions / Rules.apply, which is what lets
+ * the same game run headless in sim/simulate.js. If you find yourself adding a
+ * rule here, it belongs in js/rules.js.
+ */
 (function(root, factory) {
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = factory();
+    module.exports = factory(require('./rules.js'), require('./card-data.js'));
   } else {
-    root.Playtest = factory();
+    root.Playtest = factory(root.Rules, root.CardData);
   }
-}(typeof window !== 'undefined' ? window : this, function() {
+}(typeof window !== 'undefined' ? window : this, function(Rules, CardData) {
   'use strict';
 
-  // ---------- Constants ----------
-  var PHASES = ['Upkeep', 'Draw', 'Main Phase 1', 'Transit', 'Delivery', 'Combat', 'Main Phase 2', 'End Step'];
-  var RESOURCES = ['Capital', 'Labor', 'Fuel', 'Data', 'Time'];
-  var STARTING_HEALTH = 20;
-  var STARTING_FP = 0;
-  var MAX_HAND_SIZE = 7;
-  var DECK_SIZE = 40;
-  var WIN_FP = 10;
+  var PHASES = Rules.PHASES;
+  var RESOURCES = Rules.RESOURCES;
 
-  // Minimum card counts for balanced deck
-  var DECK_MINIMUMS = {
-    'Infrastructure': 8,
-    'Workforce': 8,
-    'Fleet': 6,
-    'Operations': 8,
-    'Disruptions': 5,
-    'Contracts': 3
-  };
+  var state = null;
+  var options = { archetypes: ['balanced', 'balanced'], seed: null, passDevice: true };
+  var awaitingPass = false;
 
-  // ---------- Game State ----------
-  var game = null;
-
-  function createPlayerState(playerNum) {
-    return {
-      name: 'Player ' + playerNum,
-      deck: [],
-      hand: [],
-      discard: [],
-      health: STARTING_HEALTH,
-      fp: STARTING_FP,
-      resources: { Capital: 0, Labor: 0, Fuel: 0, Data: 0, Time: 0 },
-      sourceZone: [],
-      networkZone: [],
-      customerZone: [],
-      contracts: []
-    };
+  function esc(s) {
+    return CardRenderer.escapeHtml(String(s === undefined || s === null ? '' : s));
   }
 
-  function createGameState() {
-    return {
-      players: [createPlayerState(1), createPlayerState(2)],
-      currentPlayer: 0,
-      currentPhase: 0,
-      turn: 1,
-      started: false,
-      gameOver: false,
-      winner: null,
-      log: []
-    };
+  // ---------------------------------------------------------------------------
+  // Action dispatch
+  // ---------------------------------------------------------------------------
+  function legal() {
+    return state ? Rules.legalActions(state) : [];
   }
 
-  // ---------- Deck Building ----------
-  function buildRandomBalancedDeck() {
-    var allCards = typeof CardData !== 'undefined' ? CardData : [];
-    if (allCards.length === 0) return [];
-
-    var byType = {};
-    for (var i = 0; i < allCards.length; i++) {
-      var card = allCards[i];
-      if (!byType[card.type]) byType[card.type] = [];
-      byType[card.type].push(card);
-    }
-
-    var deck = [];
-    var types = Object.keys(DECK_MINIMUMS);
-
-    // Fill minimum requirements
-    for (var t = 0; t < types.length; t++) {
-      var type = types[t];
-      var pool = byType[type] ? byType[type].slice() : [];
-      shuffleArray(pool);
-      var count = DECK_MINIMUMS[type];
-      for (var c = 0; c < count && c < pool.length; c++) {
-        deck.push(JSON.parse(JSON.stringify(pool[c])));
-      }
-    }
-
-    // Fill remaining slots from all cards
-    var remaining = DECK_SIZE - deck.length;
-    var deckIds = {};
-    for (var d = 0; d < deck.length; d++) {
-      deckIds[deck[d].id] = true;
-    }
-
-    var extras = allCards.filter(function(card) {
-      return !deckIds[card.id];
-    });
-    shuffleArray(extras);
-
-    for (var e = 0; e < remaining && e < extras.length; e++) {
-      deck.push(JSON.parse(JSON.stringify(extras[e])));
-    }
-
-    shuffleArray(deck);
-    return deck;
+  function findAction(pred) {
+    var acts = legal();
+    for (var i = 0; i < acts.length; i++) if (pred(acts[i])) return acts[i];
+    return null;
   }
 
-  function shuffleArray(arr) {
-    for (var i = arr.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = temp;
-    }
-    return arr;
+  /**
+   * uids arrive from DOM data-attributes as strings but live in state as
+   * numbers, so they must never be compared with ===. Getting this wrong makes
+   * the action silently never fire while remaining legal, which reads as a
+   * frozen board.
+   */
+  function sameUid(a, b) {
+    return String(a) === String(b);
   }
 
-  // ---------- Game Actions ----------
-  function drawCard(player) {
-    if (player.deck.length === 0) {
-      addLog(player.name + ' has no cards to draw!');
-      return false;
+  function dispatch(action, failMessage) {
+    if (!action) { if (failMessage) showMessage(failMessage); return false; }
+    var before = state.currentPlayer;
+    var res = Rules.apply(state, action);
+    if (!res.ok) { if (failMessage) showMessage(failMessage); return false; }
+    if (options.passDevice && state.currentPlayer !== before && !state.gameOver) {
+      awaitingPass = true;
     }
-    if (player.hand.length >= MAX_HAND_SIZE) {
-      addLog(player.name + '\'s hand is full!');
-      return false;
-    }
-    var card = player.deck.pop();
-    player.hand.push(card);
-    addLog(player.name + ' drew ' + card.name);
+    render();
+    if (state.gameOver) showWinOverlay();
     return true;
   }
 
-  function drawInitialHand(player) {
-    for (var i = 0; i < MAX_HAND_SIZE && player.deck.length > 0; i++) {
-      player.hand.push(player.deck.pop());
-    }
-  }
-
-  function canPayCost(player, card) {
-    if (!card.cost) return true;
-    for (var i = 0; i < RESOURCES.length; i++) {
-      var res = RESOURCES[i];
-      if ((card.cost[res] || 0) > player.resources[res]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function payCost(player, card) {
-    if (!card.cost) return;
-    for (var i = 0; i < RESOURCES.length; i++) {
-      var res = RESOURCES[i];
-      player.resources[res] -= (card.cost[res] || 0);
-    }
-  }
-
-  function getPrimaryResource(card) {
-    if (!card.cost) return 'Capital';
-    var maxRes = 'Capital';
-    var maxVal = 0;
-    for (var i = 0; i < RESOURCES.length; i++) {
-      var res = RESOURCES[i];
-      var val = card.cost[res] || 0;
-      if (val > maxVal) {
-        maxVal = val;
-        maxRes = res;
-      }
-    }
-    return maxRes;
-  }
 
   function playCard(handIndex) {
-    if (!game || game.gameOver) return;
-
-    var phase = PHASES[game.currentPhase];
-    if (phase !== 'Main Phase 1' && phase !== 'Main Phase 2') {
-      showMessage('You can only play cards during Main Phases!');
-      return;
-    }
-
-    var player = game.players[game.currentPlayer];
+    var player = state.players[Rules.actingPlayer(state)];
     var card = player.hand[handIndex];
-    if (!card) return;
-
-    if (!canPayCost(player, card)) {
-      showMessage('Not enough resources to play ' + card.name + '!');
+    var action = findAction(function(a) { return a.k === 'play' && a.hand === handIndex; });
+    if (!action && card) {
+      var missing = Rules.missingResources(player, card);
+      if (missing.length) {
+        // Name the shortfall. The old build showed a flat "Insufficient
+        // Resources", which is how an ungenerable resource went unnoticed.
+        showMessage('Need ' + missing.map(function(m) { return m.amount + ' more ' + m.resource; }).join(' and ') +
+          ' to play ' + card.name);
+        return;
+      }
+      showMessage('Cannot play ' + card.name + ' right now (Main Phase only)');
       return;
     }
-
-    // Pay cost
-    payCost(player, card);
-
-    // Remove from hand
-    player.hand.splice(handIndex, 1);
-
-    // Place card based on type
-    switch (card.type) {
-      case 'Infrastructure':
-        player.sourceZone.push(card);
-        addLog(player.name + ' deployed ' + card.name + ' to Source Zone');
-        break;
-      case 'Workforce':
-        player.networkZone.push(card);
-        addLog(player.name + ' deployed ' + card.name + ' to Network Zone');
-        break;
-      case 'Fleet':
-        player.networkZone.push(card);
-        addLog(player.name + ' deployed ' + card.name + ' to Network Zone');
-        break;
-      case 'Operations':
-        addLog(player.name + ' played ' + card.name + ' (effect resolves)');
-        // Operations resolve immediately - give a small resource bonus
-        var bonusRes = getPrimaryResource(card);
-        player.resources[bonusRes] += 2;
-        addLog(card.name + ' grants +2 ' + bonusRes);
-        player.discard.push(card);
-        break;
-      case 'Disruptions':
-        addLog(player.name + ' played ' + card.name + ' (disrupting opponent)');
-        var opponent = game.players[1 - game.currentPlayer];
-        // Disruptions deal 1 damage to opponent health
-        opponent.health -= 1;
-        addLog(card.name + ' deals 1 damage to ' + opponent.name);
-        player.discard.push(card);
-        checkWinCondition();
-        break;
-      case 'Contracts':
-        player.contracts.push(card);
-        addLog(player.name + ' placed Contract: ' + card.name);
-        break;
-      default:
-        player.discard.push(card);
-        break;
-    }
-
-    render();
+    dispatch(action);
   }
 
-  function transitFleet(zoneIndex) {
-    if (!game || game.gameOver) return;
-    var phase = PHASES[game.currentPhase];
-    if (phase !== 'Transit') {
-      showMessage('Fleet can only transit during the Transit Phase!');
-      return;
-    }
-
-    var player = game.players[game.currentPlayer];
-    if (zoneIndex < 0 || zoneIndex >= player.networkZone.length) return;
-
-    var card = player.networkZone[zoneIndex];
-    if (card.type !== 'Fleet') {
-      showMessage('Only Fleet cards can transit!');
-      return;
-    }
-
-    // Move Fleet from Network to Customer Zone
-    player.networkZone.splice(zoneIndex, 1);
-    player.customerZone.push(card);
-    addLog(player.name + ' moved ' + card.name + ' to Customer Zone');
-    render();
+  function transitFleet(uid) {
+    dispatch(findAction(function(a) { return a.k === 'transit' && sameUid(a.uid, uid); }),
+      'That Fleet cannot transit: it needs Fuel, an available crew, a Transit action, and to be untapped.');
   }
 
-  function attackWithWorkforce(zoneIndex) {
-    if (!game || game.gameOver) return;
-    var phase = PHASES[game.currentPhase];
-    if (phase !== 'Combat') {
-      showMessage('Combat only happens during the Combat Phase!');
-      return;
-    }
-
-    var player = game.players[game.currentPlayer];
-    if (zoneIndex < 0 || zoneIndex >= player.networkZone.length) return;
-
-    var card = player.networkZone[zoneIndex];
-    if (card.type !== 'Workforce') {
-      showMessage('Only Workforce cards can attack!');
-      return;
-    }
-
-    var power = (card.stats && card.stats.power) ? card.stats.power : 1;
-    var opponent = game.players[1 - game.currentPlayer];
-    opponent.health -= power;
-    addLog(player.name + '\'s ' + card.name + ' attacks for ' + power + ' damage!');
-    card._attacked = true;
-    checkWinCondition();
-    render();
+  function tapCard(uid) {
+    dispatch(findAction(function(a) { return a.k === 'tap' && sameUid(a.uid, uid); }),
+      'That card cannot be tapped now (needs a Main Phase, an untapped and rested card, and any Goods its ability costs).');
   }
 
-  // ---------- Phase Logic ----------
-  function runUpkeep() {
-    var player = game.players[game.currentPlayer];
-
-    // Generate resources from Infrastructure
-    for (var i = 0; i < player.sourceZone.length; i++) {
-      var infra = player.sourceZone[i];
-      var res = getPrimaryResource(infra);
-      player.resources[res] += 1;
-    }
-
-    // Base resource income: 1 Capital per turn
-    player.resources.Capital += 1;
-
-    if (player.sourceZone.length > 0) {
-      addLog(player.name + ' gained resources from ' + player.sourceZone.length + ' Infrastructure');
-    }
-    addLog(player.name + ' gained 1 Capital (base income)');
+  function attackWith(uid) {
+    dispatch(findAction(function(a) { return a.k === 'attack' && sameUid(a.uid, uid); }),
+      'That Workforce cannot attack (Combat Phase only, and not the turn it arrives unless it has Rush).');
   }
 
-  function runDraw() {
-    var player = game.players[game.currentPlayer];
-    drawCard(player);
+  function blockWith(attackerUid, blockerUid) {
+    dispatch(findAction(function(a) {
+      return a.k === 'block' && sameUid(a.attacker, attackerUid) && sameUid(a.blocker, blockerUid);
+    }), 'That card cannot block.');
   }
 
-  function runTransit() {
-    // Transit is player-driven - they click Fleet cards to move them
-    addLog('Transit Phase - click Fleet cards in Network Zone to move them');
+  function fulfill(uid) {
+    dispatch(findAction(function(a) { return a.k === 'fulfill' && sameUid(a.uid, uid); }),
+      'That Contract\'s requirements are not met yet.');
   }
 
-  function checkContractRequirements(player, contract) {
-    var reqs = contract.requirements;
-    if (!reqs) return true; // No requirements means auto-fulfill
-
-    var fleetInCustomer = player.customerZone.filter(function(c) { return c.type === 'Fleet'; });
-
-    // Check fleet capacity requirement
-    if (reqs.fleetCapacity !== undefined) {
-      var totalCapacity = 0;
-      for (var i = 0; i < fleetInCustomer.length; i++) {
-        totalCapacity += (fleetInCustomer[i].stats && fleetInCustomer[i].stats.capacity) ? fleetInCustomer[i].stats.capacity : 0;
-      }
-      if (totalCapacity < reqs.fleetCapacity) return false;
-    }
-
-    // Check fleet speed requirement
-    if (reqs.fleetSpeed !== undefined) {
-      var hasSpeed = false;
-      for (var s = 0; s < fleetInCustomer.length; s++) {
-        if (fleetInCustomer[s].stats && fleetInCustomer[s].stats.speed >= reqs.fleetSpeed) {
-          hasSpeed = true;
-          break;
-        }
-      }
-      if (!hasSpeed) return false;
-    }
-
-    // Check fleet type requirement (subtype match)
-    if (reqs.fleetType) {
-      var hasType = false;
-      for (var ft = 0; ft < fleetInCustomer.length; ft++) {
-        if (fleetInCustomer[ft].subtype && fleetInCustomer[ft].subtype.toLowerCase().indexOf(reqs.fleetType.toLowerCase()) !== -1) {
-          hasType = true;
-          break;
-        }
-      }
-      if (!hasType) return false;
-    }
-
-    // Check fleetTypes: "all" - player must have at least one Fleet card of each
-    // unique Fleet subtype present across all zones (Source, Network, Customer)
-    if (reqs.fleetTypes === 'all') {
-      var allFleetCards = player.sourceZone.concat(player.networkZone, player.customerZone)
-        .filter(function(c) { return c.type === 'Fleet'; });
-      var fleetSubtypes = {};
-      for (var fta = 0; fta < allFleetCards.length; fta++) {
-        if (allFleetCards[fta].subtype) {
-          fleetSubtypes[allFleetCards[fta].subtype.toLowerCase()] = true;
-        }
-      }
-      // Need at least one Fleet card of each unique subtype that exists in the card pool
-      // We check against the subtypes the player actually has available in their zones
-      var allCards = typeof CardData !== 'undefined' ? CardData : [];
-      var allFleetSubtypes = {};
-      for (var afs = 0; afs < allCards.length; afs++) {
-        if (allCards[afs].type === 'Fleet' && allCards[afs].subtype) {
-          allFleetSubtypes[allCards[afs].subtype.toLowerCase()] = true;
-        }
-      }
-      var requiredFleetSubs = Object.keys(allFleetSubtypes);
-      for (var rfs = 0; rfs < requiredFleetSubs.length; rfs++) {
-        if (!fleetSubtypes[requiredFleetSubs[rfs]]) return false;
-      }
-    }
-
-    // Check minimum fleet card count
-    if (reqs.fleetCards !== undefined) {
-      if (fleetInCustomer.length < reqs.fleetCards) return false;
-    }
-
-    // Check infrastructure requirements (specific subtypes in source zone)
-    if (reqs.infrastructure && Array.isArray(reqs.infrastructure)) {
-      for (var inf = 0; inf < reqs.infrastructure.length; inf++) {
-        var needed = reqs.infrastructure[inf].toLowerCase();
-        var found = false;
-        for (var si = 0; si < player.sourceZone.length; si++) {
-          var infraCard = player.sourceZone[si];
-          if (infraCard.type === 'Infrastructure' &&
-              infraCard.subtype && infraCard.subtype.toLowerCase().indexOf(needed) !== -1) {
-            found = true;
-            break;
-          }
-          // Also check by name
-          if (infraCard.type === 'Infrastructure' &&
-              infraCard.name && infraCard.name.toLowerCase().indexOf(needed) !== -1) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) return false;
-      }
-    }
-
-    // Check infrastructureTypes: "all" - player must have at least one Infrastructure
-    // card of each unique Infrastructure subtype present across all zones
-    if (reqs.infrastructureTypes === 'all') {
-      var allInfraCards = player.sourceZone.concat(player.networkZone, player.customerZone)
-        .filter(function(c) { return c.type === 'Infrastructure'; });
-      var infraSubtypes = {};
-      for (var ita = 0; ita < allInfraCards.length; ita++) {
-        if (allInfraCards[ita].subtype) {
-          infraSubtypes[allInfraCards[ita].subtype.toLowerCase()] = true;
-        }
-      }
-      // Check against all Infrastructure subtypes in the card pool
-      var allCardsInfra = typeof CardData !== 'undefined' ? CardData : [];
-      var allInfraSubtypes = {};
-      for (var ais = 0; ais < allCardsInfra.length; ais++) {
-        if (allCardsInfra[ais].type === 'Infrastructure' && allCardsInfra[ais].subtype) {
-          allInfraSubtypes[allCardsInfra[ais].subtype.toLowerCase()] = true;
-        }
-      }
-      var requiredInfraSubs = Object.keys(allInfraSubtypes);
-      for (var ris = 0; ris < requiredInfraSubs.length; ris++) {
-        if (!infraSubtypes[requiredInfraSubs[ris]]) return false;
-      }
-    }
-
-    // Check workforce requirements (specific subtypes/names in network zone)
-    if (reqs.workforce) {
-      if (Array.isArray(reqs.workforce)) {
-        for (var w = 0; w < reqs.workforce.length; w++) {
-          var neededWorker = reqs.workforce[w].toLowerCase();
-          var workerFound = false;
-          for (var nw = 0; nw < player.networkZone.length; nw++) {
-            var wCard = player.networkZone[nw];
-            if (wCard.type === 'Workforce') {
-              if ((wCard.subtype && wCard.subtype.toLowerCase().indexOf(neededWorker) !== -1) ||
-                  (wCard.name && wCard.name.toLowerCase().indexOf(neededWorker) !== -1)) {
-                workerFound = true;
-                break;
-              }
-            }
-          }
-          if (!workerFound) return false;
-        }
-      } else if (typeof reqs.workforce === 'number') {
-        // Numeric workforce requirement: need at least N workforce cards
-        var workforceCount = player.networkZone.filter(function(c) { return c.type === 'Workforce'; }).length;
-        if (workforceCount < reqs.workforce) return false;
-      }
-    }
-
-    // Must have at least one fleet in customer zone as the basic delivery mechanism
-    if (fleetInCustomer.length === 0) return false;
-
-    return true;
+  function doneBlocking() {
+    dispatch(findAction(function(a) { return a.k === 'doneBlocking'; }));
   }
 
-  function runDelivery() {
-    var player = game.players[game.currentPlayer];
-
-    // Check if any contracts can be fulfilled
-    if (player.customerZone.length > 0 && player.contracts.length > 0) {
-      for (var i = player.contracts.length - 1; i >= 0; i--) {
-        var contract = player.contracts[i];
-
-        if (!checkContractRequirements(player, contract)) {
-          continue; // This contract's requirements are not met
-        }
-
-        var fleetInCustomer = player.customerZone.filter(function(c) { return c.type === 'Fleet'; });
-        var fpReward = contract.fpReward || 2;
-        player.fp += fpReward;
-        addLog(player.name + ' fulfilled ' + contract.name + ' for ' + fpReward + ' FP!');
-        player.discard.push(contract);
-        player.contracts.splice(i, 1);
-
-        // Return fleet to network zone
-        var fleet = fleetInCustomer[0];
-        var fleetIdx = player.customerZone.indexOf(fleet);
-        if (fleetIdx >= 0) {
-          player.customerZone.splice(fleetIdx, 1);
-          player.networkZone.push(fleet);
-        }
-
-        checkWinCondition();
-        break;
-      }
-    }
+  function requisition(handIndex, resource) {
+    dispatch({ k: 'requisition', hand: handIndex, resource: resource, actor: Rules.actingPlayer(state) },
+      'Requisition is once per turn, during a Main Phase.');
   }
 
-  function runCombat() {
-    // Combat is player-driven - they click Workforce cards to attack
-    var player = game.players[game.currentPlayer];
-    // Reset attack flags
-    for (var i = 0; i < player.networkZone.length; i++) {
-      if (player.networkZone[i].type === 'Workforce') {
-        player.networkZone[i]._attacked = false;
-      }
-    }
-    addLog('Combat Phase - click Workforce cards to attack');
-  }
-
-  function runEndStep() {
-    var player = game.players[game.currentPlayer];
-    // Discard down to max hand size
-    while (player.hand.length > MAX_HAND_SIZE) {
-      var discarded = player.hand.pop();
-      player.discard.push(discarded);
-      addLog(player.name + ' discarded ' + discarded.name + ' (hand size limit)');
-    }
-  }
 
   function advancePhase() {
-    if (!game || game.gameOver) return;
-
-    // Run current phase logic first if it is auto
-    var phase = PHASES[game.currentPhase];
-    switch (phase) {
-      case 'Upkeep': runUpkeep(); break;
-      case 'Draw': runDraw(); break;
-      case 'Transit': /* player-driven */ break;
-      case 'Delivery': runDelivery(); break;
-      case 'Combat': /* player-driven */ break;
-      case 'End Step': runEndStep(); break;
-    }
-
-    // Advance to next phase
-    game.currentPhase++;
-
-    if (game.currentPhase >= PHASES.length) {
-      // End of turn - switch player
-      endTurn();
-    } else {
-      addLog('--- ' + PHASES[game.currentPhase] + ' ---');
-      // Auto-advance non-interactive phases
-      var nextPhase = PHASES[game.currentPhase];
-      if (nextPhase === 'Upkeep' || nextPhase === 'Draw' || nextPhase === 'Delivery' || nextPhase === 'End Step') {
-        render();
-        setTimeout(function() { advancePhase(); }, 400);
-        return;
-      }
-    }
-
-    render();
+    if (!state || state.gameOver) return;
+    if (state.combat.awaiting) { showMessage('Declare blockers first.'); return; }
+    dispatch({ k: 'nextPhase', actor: Rules.actingPlayer(state) });
   }
 
+  /**
+   * End Turn runs every phase it passes through, including Delivery, and
+   * auto-fulfills any Contract whose clauses are met. The old button jumped
+   * straight to the End Step and silently forfeited the turn's only FP chance.
+   */
   function endTurn() {
-    game.currentPlayer = 1 - game.currentPlayer;
-    game.currentPhase = 0;
-    game.turn++;
-    addLog('========== Turn ' + game.turn + ': ' + game.players[game.currentPlayer].name + ' ==========');
-    render();
+    if (!state || state.gameOver) return;
+    dispatch({ k: 'endTurn', actor: state.currentPlayer });
   }
 
-  function checkWinCondition() {
-    if (!game) return;
-
-    for (var i = 0; i < game.players.length; i++) {
-      var player = game.players[i];
-      var opponent = game.players[1 - i];
-
-      if (player.fp >= WIN_FP) {
-        game.gameOver = true;
-        game.winner = i;
-        addLog(player.name + ' wins with ' + player.fp + ' Fulfillment Points!');
-        showWinOverlay(player.name + ' wins!', player.fp + ' Fulfillment Points reached!');
-        return;
-      }
-      if (opponent.health <= 0) {
-        game.gameOver = true;
-        game.winner = i;
-        addLog(player.name + ' wins! ' + opponent.name + '\'s Supply Chain collapsed!');
-        showWinOverlay(player.name + ' wins!', opponent.name + '\'s Supply Chain Health reached 0!');
-        return;
-      }
-    }
-  }
-
-  // ---------- Logging ----------
-  function addLog(msg) {
-    if (!game) return;
-    game.log.push(msg);
-    if (game.log.length > 100) {
-      game.log = game.log.slice(-50);
-    }
-  }
-
-  // ---------- UI Messages ----------
-  function showMessage(msg) {
-    var el = document.getElementById('playtest-message');
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add('visible');
-    setTimeout(function() {
-      el.classList.remove('visible');
-    }, 2500);
-  }
-
-  function showWinOverlay(title, subtitle) {
-    var overlay = document.getElementById('win-overlay');
-    if (!overlay) return;
-    var h2 = overlay.querySelector('.win-title');
-    var p = overlay.querySelector('.win-subtitle');
-    if (h2) h2.textContent = title;
-    if (p) p.textContent = subtitle;
-    overlay.classList.add('visible');
-  }
-
-  function hideWinOverlay() {
-    var overlay = document.getElementById('win-overlay');
-    if (overlay) overlay.classList.remove('visible');
-  }
-
-  // ---------- Rendering ----------
+  // ---------------------------------------------------------------------------
+  // Rendering
+  // ---------------------------------------------------------------------------
   function render() {
-    if (!game) return;
+    if (!state) return;
+    var el = document.getElementById('pass-device');
+    if (el) el.style.display = awaitingPass ? 'flex' : 'none';
+    if (awaitingPass) {
+      var who = document.getElementById('pass-device-name');
+      if (who) who.textContent = state.players[state.currentPlayer].name;
+      return;
+    }
     renderPhaseBar();
-    renderPlayerInfo(0);
-    renderPlayerInfo(1);
+    renderPlayerPanels();
     renderZones();
     renderHand();
     renderContracts();
+    renderCombatPrompt();
     renderLog();
     renderControls();
   }
@@ -640,292 +161,534 @@
     if (!bar) return;
     var html = '';
     for (var i = 0; i < PHASES.length; i++) {
-      var active = i === game.currentPhase ? ' active' : '';
-      var done = i < game.currentPhase ? ' done' : '';
-      html += '<div class="phase-step' + active + done + '">' + PHASES[i] + '</div>';
+      var cls = 'phase-step' + (i === state.phase ? ' active' : '') + (i < state.phase ? ' done' : '');
+      html += '<div class="' + cls + '">' + esc(PHASES[i]) + '</div>';
     }
     bar.innerHTML = html;
   }
 
-  function renderPlayerInfo(playerIndex) {
-    var player = game.players[playerIndex];
-    var prefix = playerIndex === 0 ? 'p1' : 'p2';
 
-    var nameEl = document.getElementById(prefix + '-name');
-    var healthEl = document.getElementById(prefix + '-health');
-    var fpEl = document.getElementById(prefix + '-fp');
+  /** The seat whose hand and zones are on screen. */
+  function viewIndex() {
+    return Rules.actingPlayer(state);
+  }
+
+  /**
+   * Both panels are rendered from ONE perspective: the bottom panel is always
+   * the player whose board is on the bottom. Previously the zones followed
+   * currentPlayer while the panels were bound to player index, so on Player 2's
+   * turn the bottom of the screen showed P2's board under a "Player 1" panel.
+   */
+  function renderPlayerPanels() {
+    renderPanel('p1', viewIndex(), true);
+    renderPanel('p2', 1 - viewIndex(), false);
+  }
+
+  function renderPanel(prefix, playerIndex, isViewer) {
+    var player = state.players[playerIndex];
+    function set(id, value) {
+      var el = document.getElementById(prefix + id);
+      if (el) el.textContent = value;
+    }
+    set('-name', player.name + (isViewer ? ' (you)' : '') +
+      (playerIndex === state.currentPlayer ? ' - active turn' : ''));
+    set('-health', player.health);
+    set('-fp', player.fp + ' / ' + state.config.winFp);
+    set('-deck-count', player.deck.length);
+
     var resEl = document.getElementById(prefix + '-resources');
-    var deckEl = document.getElementById(prefix + '-deck-count');
-
-    if (nameEl) nameEl.textContent = player.name;
-    if (healthEl) healthEl.textContent = player.health;
-    if (fpEl) fpEl.textContent = player.fp;
-    if (deckEl) deckEl.textContent = player.deck.length;
-
     if (resEl) {
       var html = '';
       for (var i = 0; i < RESOURCES.length; i++) {
         var res = RESOURCES[i];
-        html += '<span class="res-counter res-' + res.toLowerCase() + '">';
+        html += '<span class="res-counter res-' + res.toLowerCase() + '" title="' + res + '">';
         html += '<span class="res-icon">' + res.charAt(0) + '</span>';
-        html += '<span class="res-value">' + player.resources[res] + '</span>';
-        html += '</span>';
+        html += '<span class="res-value">' + player.resources[res] + '</span></span>';
       }
+      html += '<span class="res-counter res-goods" title="Goods in storage">' +
+        '<span class="res-icon">G</span><span class="res-value">' + Rules.storedGoods(player) + '</span></span>';
       resEl.innerHTML = html;
     }
 
-    // Highlight active player
     var infoEl = document.getElementById(prefix + '-info');
     if (infoEl) {
-      if (playerIndex === game.currentPlayer) {
-        infoEl.classList.add('active-player');
-      } else {
-        infoEl.classList.remove('active-player');
-      }
+      infoEl.classList.toggle('active-player', playerIndex === state.currentPlayer);
     }
   }
+
 
   function renderZones() {
-    var player = game.players[game.currentPlayer];
-    var opponent = game.players[1 - game.currentPlayer];
-
-    renderZoneCards('source-zone', player.sourceZone, 'source');
-    renderZoneCards('network-zone', player.networkZone, 'network');
-    renderZoneCards('customer-zone', player.customerZone, 'customer');
-    renderZoneCards('opp-source-zone', opponent.sourceZone, 'opp-source');
-    renderZoneCards('opp-network-zone', opponent.networkZone, 'opp-network');
-    renderZoneCards('opp-customer-zone', opponent.customerZone, 'opp-customer');
+    var me = state.players[viewIndex()];
+    var them = state.players[1 - viewIndex()];
+    renderZoneCards('source-zone', me.source, true);
+    renderZoneCards('network-zone', me.network, true);
+    renderZoneCards('customer-zone', me.customer, true);
+    renderZoneCards('opp-source-zone', them.source, false);
+    renderZoneCards('opp-network-zone', them.network, false);
+    renderZoneCards('opp-customer-zone', them.customer, false);
   }
 
-  function renderZoneCards(elementId, cards, zoneType) {
+  /** Badges make the physical state of a card visible: tokens, tapped, disabled. */
+  function badges(card) {
+    var html = '';
+    if (card.type === 'Infrastructure' && card.stored) {
+      html += '<div class="badge badge-goods" title="Goods stored">' + card.stored + ' Goods</div>';
+    }
+    if (card.type === 'Fleet' && card.carrying) {
+      html += '<div class="badge badge-cargo" title="Goods loaded">' + card.carrying + ' Cargo</div>';
+    }
+    if (card.tapped) html += '<div class="badge badge-tapped">Tapped</div>';
+    if (card.disabledFor > 0) html += '<div class="badge badge-disabled">Disabled ' + card.disabledFor + '</div>';
+    if (!card.ready && card.type !== 'Contracts') html += '<div class="badge badge-new">Arriving</div>';
+    if (card.attacked) html += '<div class="badge badge-attacked">Attacked</div>';
+    return html;
+  }
+
+  function actionFor(card) {
+    var acts = legal();
+    for (var i = 0; i < acts.length; i++) {
+      var a = acts[i];
+      if (a.uid === card.uid && (a.k === 'transit' || a.k === 'attack' || a.k === 'tap')) return a;
+    }
+    return null;
+  }
+
+  function renderZoneCards(elementId, cards, interactive) {
     var el = document.getElementById(elementId);
     if (!el) return;
-
-    if (cards.length === 0) {
-      el.innerHTML = '<div class="zone-empty">Empty</div>';
-      return;
-    }
-
+    if (!cards.length) { el.innerHTML = '<div class="zone-empty">Empty</div>'; return; }
     var html = '';
     for (var i = 0; i < cards.length; i++) {
       var card = cards[i];
-      var clickable = '';
-      var phase = PHASES[game.currentPhase];
-
-      // Add interactivity based on phase and zone
-      if (zoneType === 'network' && card.type === 'Fleet' && phase === 'Transit') {
-        clickable = ' class="zone-card clickable" data-action="transit" data-index="' + i + '"';
-      } else if (zoneType === 'network' && card.type === 'Workforce' && phase === 'Combat' && !card._attacked) {
-        clickable = ' class="zone-card clickable" data-action="attack" data-index="' + i + '"';
-      } else {
-        clickable = ' class="zone-card"';
-      }
-
-      html += '<div' + clickable + '>';
-      html += CardRenderer.renderCard(card, { size: 'small' });
-      if (card._attacked) {
-        html += '<div class="attacked-badge">Attacked</div>';
-      }
+      var action = interactive ? actionFor(card) : null;
+      var cls = 'zone-card' + (action ? ' clickable action-' + action.k : '') + (card.tapped ? ' is-tapped' : '');
+      html += '<div class="' + cls + '" data-uid="' + card.uid + '"' +
+        (action ? ' data-action="' + action.k + '"' : '') +
+        ' title="' + esc(card.name + ' - ' + (card.rulesText || '')) + '">';
+      html += CardRenderer.renderCached(card, { size: 'small' });
+      html += badges(card);
+      if (action) html += '<div class="action-hint">' + esc(actionLabel(action)) + '</div>';
       html += '</div>';
     }
     el.innerHTML = html;
   }
+
+  function actionLabel(action) {
+    if (action.k === 'transit') return 'Transit ->';
+    if (action.k === 'attack') return 'Attack';
+    if (action.k === 'tap') return 'Tap';
+    return action.k;
+  }
+
 
   function renderHand() {
     var el = document.getElementById('player-hand');
     if (!el) return;
-
-    var player = game.players[game.currentPlayer];
-    if (player.hand.length === 0) {
-      el.innerHTML = '<div class="hand-empty">No cards in hand</div>';
-      return;
-    }
-
-    var phase = PHASES[game.currentPhase];
-    var isMainPhase = (phase === 'Main Phase 1' || phase === 'Main Phase 2');
+    var player = state.players[viewIndex()];
+    if (!player.hand.length) { el.innerHTML = '<div class="hand-empty">No cards in hand</div>'; return; }
+    var playableIdx = {};
+    legal().forEach(function(a) { if (a.k === 'play') playableIdx[a.hand] = true; });
 
     var html = '';
     for (var i = 0; i < player.hand.length; i++) {
       var card = player.hand[i];
-      var playable = isMainPhase && canPayCost(player, card);
-      var classes = 'hand-card' + (playable ? ' playable' : ' unplayable');
-      var dataAttrs = playable ? ' data-action="play" data-index="' + i + '"' : '';
-      html += '<div class="' + classes + '"' + dataAttrs + '>';
-      html += CardRenderer.renderCard(card, { size: 'small' });
-      if (!playable && isMainPhase) {
-        html += '<div class="card-overlay-cost">Insufficient Resources</div>';
+      var playable = !!playableIdx[i];
+      html += '<div class="hand-card' + (playable ? ' playable' : ' unplayable') + '" data-index="' + i + '"' +
+        (playable ? ' data-action="play"' : '') + '>';
+      html += CardRenderer.renderCached(card, { size: 'small' });
+      if (!playable) {
+        var missing = Rules.missingResources(player, card);
+        if (missing.length) {
+          // Name the missing resource on the card itself.
+          html += '<div class="card-overlay-cost">Need ' +
+            missing.map(function(m) { return m.amount + ' ' + m.resource; }).join(', ') + '</div>';
+        }
       }
+      html += '<button class="zoom-btn" data-zoom="' + i + '" title="Enlarge card">+</button>';
       html += '</div>';
     }
     el.innerHTML = html;
   }
 
+  /**
+   * Contracts show every clause with met/unmet state. A player can now plan
+   * against a Contract instead of reading a name and an FP number.
+   */
   function renderContracts() {
     var el = document.getElementById('active-contracts');
     if (!el) return;
-
-    var player = game.players[game.currentPlayer];
-    if (player.contracts.length === 0) {
-      el.innerHTML = '<div class="contracts-empty">No active contracts</div>';
+    var pi = viewIndex();
+    var player = state.players[pi];
+    if (!player.contracts.length) {
+      el.innerHTML = '<div class="contracts-empty">No active contracts. Play a Contract card in a Main Phase.</div>';
       return;
     }
+    var fulfillable = {};
+    legal().forEach(function(a) { if (a.k === 'fulfill') fulfillable[a.uid] = true; });
 
     var html = '';
-    for (var i = 0; i < player.contracts.length; i++) {
-      var card = player.contracts[i];
-      html += '<div class="contract-card">';
-      html += '<span class="contract-name">' + escapeHtml(card.name) + '</span>';
-      html += '<span class="contract-reward">FP: ' + (card.fpReward || 2) + '</span>';
+    player.contracts.forEach(function(card) {
+      var clauses = Rules.contractStatus(state, pi, card);
+      var met = clauses.filter(function(c) { return c.met; }).length;
+      html += '<div class="contract-card' + (fulfillable[card.uid] ? ' ready' : '') + '">';
+      html += '<div class="contract-head"><span class="contract-name">' + esc(card.name) + '</span>' +
+        '<span class="contract-reward">' + Number(card.fpReward) + ' FP</span>' +
+        '<span class="contract-progress">' + met + '/' + clauses.length + '</span></div>';
+      html += '<ul class="contract-clauses">';
+      clauses.forEach(function(c) {
+        html += '<li class="' + (c.met ? 'clause-met' : 'clause-unmet') + '">' +
+          (c.met ? '\u2713 ' : '\u2717 ') + esc(c.label) + '</li>';
+      });
+      html += '</ul>';
+      if (fulfillable[card.uid]) {
+        html += '<button class="btn-fulfill" data-fulfill="' + card.uid + '">Fulfill for ' +
+          Number(card.fpReward) + ' FP</button>';
+      }
       html += '</div>';
-    }
+    });
+    el.innerHTML = html;
+  }
+
+
+  /** The defender's block step gets an explicit prompt. */
+  function renderCombatPrompt() {
+    var el = document.getElementById('combat-prompt');
+    if (!el) return;
+    if (!state.combat.awaiting) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.style.display = 'block';
+    var defenderIndex = 1 - state.currentPlayer;
+    var attacker = state.players[state.currentPlayer];
+    var blocks = state.combat.blocks;
+    var html = '<h4>' + esc(state.players[defenderIndex].name) + ': declare blockers</h4>';
+    state.combat.attackers.forEach(function(uid) {
+      var att = Rules.find(attacker.network, uid);
+      if (!att) return;
+      var blockerUid = blocks[uid];
+      html += '<div class="block-row"><span class="block-attacker">' + esc(att.name) + ' (Power ' +
+        Number(att.stats.power) + ')</span>';
+      if (blockerUid) {
+        var blk = Rules.find(state.players[defenderIndex].network, blockerUid);
+        html += '<span class="block-assigned">blocked by ' + esc(blk ? blk.name : '?') + '</span>';
+      } else {
+        var choices = legal().filter(function(a) { return a.k === 'block' && a.attacker === uid; });
+        if (!choices.length) html += '<span class="block-none">unblocked</span>';
+        else {
+          html += '<select class="block-select" data-attacker="' + uid + '">' +
+            '<option value="">-- leave unblocked --</option>';
+          choices.forEach(function(a) {
+            var card = Rules.find(state.players[defenderIndex].network, a.blocker);
+            html += '<option value="' + a.blocker + '">' + esc(card.name) + ' (' +
+              (card.type === 'Fleet' ? '0/' + Number(card.stats.capacity) + ' barricade'
+                : Number(card.stats.power) + '/' + Number(card.stats.toughness)) + ')</option>';
+          });
+          html += '</select>';
+        }
+      }
+      html += '</div>';
+    });
+    html += '<button class="btn-primary" id="btn-done-blocking">Resolve Combat</button>';
     el.innerHTML = html;
   }
 
   function renderLog() {
     var el = document.getElementById('game-log');
     if (!el) return;
-
-    var entries = game.log.slice(-15);
+    // Grouped by turn and generous: auto phases emit several lines each, and the
+    // 15-entry window scrolled away the explanation of the turn.
+    var entries = state.log.slice(-60);
     var html = '';
-    for (var i = 0; i < entries.length; i++) {
-      html += '<div class="log-entry">' + escapeHtml(entries[i]) + '</div>';
-    }
+    var lastKey = null;
+    entries.forEach(function(entry) {
+      var key = entry.turn + '|' + entry.phase;
+      if (key !== lastKey) {
+        html += '<div class="log-head">Turn ' + entry.turn + ' - ' + esc(entry.phase) + '</div>';
+        lastKey = key;
+      }
+      html += '<div class="log-entry">' + esc(entry.msg) + '</div>';
+    });
     el.innerHTML = html;
     el.scrollTop = el.scrollHeight;
   }
 
+
   function renderControls() {
     var nextBtn = document.getElementById('btn-next-phase');
     var endBtn = document.getElementById('btn-end-turn');
-
+    var blocking = state.combat.awaiting;
     if (nextBtn) {
-      if (game.gameOver) {
-        nextBtn.disabled = true;
-      } else {
-        nextBtn.disabled = false;
-        nextBtn.textContent = 'Next Phase (' + (PHASES[game.currentPhase + 1] || 'End Turn') + ')';
-      }
+      nextBtn.disabled = state.gameOver || blocking;
+      var next = PHASES[state.phase + 1];
+      nextBtn.textContent = blocking ? 'Waiting for blockers'
+        : 'Next Phase' + (next ? ' (' + next + ')' : ' (End Turn)');
     }
     if (endBtn) {
-      endBtn.disabled = game.gameOver;
+      endBtn.disabled = state.gameOver || blocking;
+      endBtn.title = 'Runs the remaining phases, including Delivery';
     }
-
-    // Show current turn info
-    var turnInfo = document.getElementById('turn-info');
-    if (turnInfo) {
-      turnInfo.textContent = 'Turn ' + game.turn + ' - ' + game.players[game.currentPlayer].name + ' - ' + PHASES[game.currentPhase];
+    var info = document.getElementById('turn-info');
+    if (info) {
+      info.textContent = 'Turn ' + state.turn + ' - ' + state.players[state.currentPlayer].name +
+        ' - ' + PHASES[state.phase] +
+        ' | Transit actions left: ' + state.players[state.currentPlayer].transitBudget;
+    }
+    var reqBar = document.getElementById('requisition-bar');
+    if (reqBar) {
+      var canReq = legal().some(function(a) { return a.k === 'requisition'; });
+      reqBar.style.display = canReq ? 'flex' : 'none';
+      if (canReq && !reqBar.dataset.built) {
+        reqBar.dataset.built = '1';
+        var html = '<span class="req-label">Requisition (discard 1 card for 1 resource, once per turn):</span>';
+        RESOURCES.forEach(function(res) {
+          html += '<button data-requisition="' + res + '">' + res + '</button>';
+        });
+        reqBar.innerHTML = html;
+      }
     }
   }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;')
-                      .replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;')
-                      .replace(/"/g, '&quot;');
+  function showMessage(msg) {
+    var el = document.getElementById('playtest-message');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('visible');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function() { el.classList.remove('visible'); }, 3200);
   }
 
-  // ---------- Setup & Initialization ----------
-  function showSetup() {
-    var setup = document.getElementById('playtest-setup');
+  function showWinOverlay() {
+    var overlay = document.getElementById('win-overlay');
+    if (!overlay) return;
+    var title = overlay.querySelector('.win-title');
+    var sub = overlay.querySelector('.win-subtitle');
+    if (title) title.textContent = state.winner === null ? 'Draw' : state.players[state.winner].name + ' wins!';
+    if (sub) sub.textContent = state.winReason || '';
+    overlay.classList.add('visible');
+  }
+
+  function hideWinOverlay() {
+    var overlay = document.getElementById('win-overlay');
+    if (overlay) overlay.classList.remove('visible');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Click-to-zoom. Board and hand cards render at card-small, which sets rules
+  // text to 7px - unreadable exactly where decisions get made. Any card on
+  // screen can be enlarged to the full frame.
+  // ---------------------------------------------------------------------------
+  function allVisibleCards() {
+    if (!state) return [];
+    var out = [];
+    state.players.forEach(function(p) {
+      out = out.concat(p.hand, p.source, p.network, p.customer, p.contracts);
+    });
+    return out;
+  }
+
+  function findByUid(uid) {
+    var all = allVisibleCards();
+    for (var i = 0; i < all.length; i++) {
+      if (String(all[i].uid) === String(uid)) return all[i];
+    }
+    return null;
+  }
+
+  function showZoom(card) {
+    if (!card) return;
+    var overlay = document.getElementById('zoom-overlay');
+    var body = document.getElementById('zoom-body');
+    if (!overlay || !body) return;
+    var html = CardRenderer.renderCard(card, { size: 'large' });
+    if (card.loreText) html += '<div class="zoom-lore">' + esc(card.loreText) + '</div>';
+    if (card.keywords && card.keywords.length) {
+      html += '<div class="zoom-keywords">';
+      card.keywords.forEach(function(kw) {
+        html += '<div class="zoom-keyword"><strong>' + esc(kw) + '</strong>: ' +
+          esc(Rules.Glossary.KEYWORDS[kw] || '') + '</div>';
+      });
+      html += '</div>';
+    }
+    body.innerHTML = html;
+    overlay.classList.add('visible');
+  }
+
+  function hideZoom() {
+    var overlay = document.getElementById('zoom-overlay');
+    if (overlay) overlay.classList.remove('visible');
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // Event wiring. All board interaction is delegated from stable containers so
+  // re-rendering innerHTML never drops a listener.
+  // ---------------------------------------------------------------------------
+  function bindEvents() {
     var board = document.getElementById('playtest-board');
-    if (setup) setup.style.display = 'block';
-    if (board) board.style.display = 'none';
-    hideWinOverlay();
+    if (board && !board.dataset.bound) {
+      board.dataset.bound = '1';
+      board.addEventListener('click', onBoardClick);
+      board.addEventListener('change', onBoardChange);
+    }
+
+    var pass = document.getElementById('btn-pass-continue');
+    if (pass && !pass.dataset.bound) {
+      pass.dataset.bound = '1';
+      pass.addEventListener('click', function() {
+        awaitingPass = false;
+        render();
+      });
+    }
+
+    var zoomClose = document.getElementById('zoom-close');
+    if (zoomClose && !zoomClose.dataset.bound) {
+      zoomClose.dataset.bound = '1';
+      zoomClose.addEventListener('click', hideZoom);
+    }
+    var zoomOverlay = document.getElementById('zoom-overlay');
+    if (zoomOverlay && !zoomOverlay.dataset.bound) {
+      zoomOverlay.dataset.bound = '1';
+      zoomOverlay.addEventListener('click', function(e) {
+        if (e.target === zoomOverlay) hideZoom();
+      });
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') hideZoom();
+    });
   }
 
-  function showBoard() {
+  function onBoardClick(e) {
+    if (!state) return;
+
+    var zoomBtn = e.target.closest('[data-zoom]');
+    if (zoomBtn) {
+      e.stopPropagation();
+      var player = state.players[viewIndex()];
+      showZoom(player.hand[Number(zoomBtn.getAttribute('data-zoom'))]);
+      return;
+    }
+
+
+    var fulfillBtn = e.target.closest('[data-fulfill]');
+    if (fulfillBtn) { fulfill(fulfillBtn.getAttribute('data-fulfill')); return; }
+
+    var reqBtn = e.target.closest('[data-requisition]');
+    if (reqBtn) { requisition(0, reqBtn.getAttribute('data-requisition')); return; }
+
+    if (e.target.id === 'btn-done-blocking') { doneBlocking(); return; }
+
+    var handCard = e.target.closest('.hand-card');
+    if (handCard) {
+      playCard(Number(handCard.getAttribute('data-index')));
+      return;
+    }
+
+    var zoneCard = e.target.closest('.zone-card');
+    if (zoneCard) {
+      var uid = zoneCard.getAttribute('data-uid');
+      var action = zoneCard.getAttribute('data-action');
+      // A card with no available action zooms instead of doing nothing silently.
+      if (action === 'transit') transitFleet(uid);
+      else if (action === 'attack') attackWith(uid);
+      else if (action === 'tap') tapCard(uid);
+      else showZoom(findByUid(uid));
+      return;
+    }
+  }
+
+  /** Blocker assignment comes from the select elements in the combat prompt. */
+  function onBoardChange(e) {
+    var sel = e.target.closest('.block-select');
+    if (!sel || !sel.value) return;
+    blockWith(sel.getAttribute('data-attacker'), sel.value);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Game lifecycle
+  // ---------------------------------------------------------------------------
+  function readOptions() {
+    function val(id, fallback) {
+      var el = document.getElementById(id);
+      return el && el.value ? el.value : fallback;
+    }
+    options.archetypes = [val('deck-p1', 'balanced'), val('deck-p2', 'balanced')];
+    var seedRaw = val('game-seed', '');
+    options.seed = seedRaw === '' ? (Date.now() % 2147483647) : Rules.Rng.hash(seedRaw);
+    var passEl = document.getElementById('pass-device-toggle');
+    options.passDevice = passEl ? !!passEl.checked : true;
+  }
+
+
+  function startGame() {
+    readOptions();
+    state = Rules.createGame({
+      pool: CardData,
+      seed: options.seed,
+      archetypes: options.archetypes,
+      names: ['Player 1', 'Player 2']
+    });
+    awaitingPass = false;
+    hideWinOverlay();
     var setup = document.getElementById('playtest-setup');
     var board = document.getElementById('playtest-board');
     if (setup) setup.style.display = 'none';
-    if (board) board.style.display = 'grid';
-    bindBoardEvents();
-  }
-
-  function bindBoardEvents() {
-    // Event delegation for zone cards
-    var zones = ['network-zone', 'source-zone', 'customer-zone'];
-    for (var z = 0; z < zones.length; z++) {
-      var zoneEl = document.getElementById(zones[z]);
-      if (zoneEl && !zoneEl._delegated) {
-        zoneEl._delegated = true;
-        zoneEl.addEventListener('click', function(e) {
-          var zoneCard = e.target.closest('.zone-card[data-action]');
-          if (!zoneCard) return;
-          var action = zoneCard.getAttribute('data-action');
-          var index = parseInt(zoneCard.getAttribute('data-index'), 10);
-          if (isNaN(index)) return;
-          if (action === 'transit') {
-            transitFleet(index);
-          } else if (action === 'attack') {
-            attackWithWorkforce(index);
-          }
-        });
-      }
-    }
-
-    // Event delegation for hand cards
-    var handEl = document.getElementById('player-hand');
-    if (handEl && !handEl._delegated) {
-      handEl._delegated = true;
-      handEl.addEventListener('click', function(e) {
-        var handCard = e.target.closest('.hand-card[data-action]');
-        if (!handCard) return;
-        var action = handCard.getAttribute('data-action');
-        var index = parseInt(handCard.getAttribute('data-index'), 10);
-        if (isNaN(index)) return;
-        if (action === 'play') {
-          playCard(index);
-        }
-      });
-    }
-  }
-
-  function startGame() {
-    game = createGameState();
-
-    // Build decks for both players
-    game.players[0].deck = buildRandomBalancedDeck();
-    game.players[1].deck = buildRandomBalancedDeck();
-
-    // Draw initial hands
-    drawInitialHand(game.players[0]);
-    drawInitialHand(game.players[1]);
-
-    game.started = true;
-    addLog('========== Game Start! ==========');
-    addLog('Turn 1: ' + game.players[0].name);
-    addLog('--- ' + PHASES[0] + ' ---');
-
-    showBoard();
+    if (board) board.style.display = 'block';
+    var seedOut = document.getElementById('seed-readout');
+    if (seedOut) seedOut.textContent = 'Seed ' + state.seed;
+    bindEvents();
     render();
   }
 
   function newGame() {
-    game = null;
+    state = null;
+    awaitingPass = false;
     hideWinOverlay();
-    showSetup();
+    hideZoom();
+    var setup = document.getElementById('playtest-setup');
+    var board = document.getElementById('playtest-board');
+    if (setup) setup.style.display = 'block';
+    if (board) board.style.display = 'none';
   }
+
+  /** Populate the deck-archetype selects from the rules core, not a hard-coded list. */
+  function populateSetup() {
+    ['deck-p1', 'deck-p2'].forEach(function(id) {
+      var sel = document.getElementById(id);
+      if (!sel || sel.options.length) return;
+      Rules.ARCHETYPES.forEach(function(name) {
+        var opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+        sel.appendChild(opt);
+      });
+      sel.value = 'balanced';
+    });
+  }
+
 
   function init() {
-    showSetup();
+    // One shared <defs> for every cost pip on the page, instead of one per pip.
+    if (!document.getElementById('sc-sprite-defs')) {
+      var holder = document.createElement('div');
+      holder.id = 'sc-sprite-defs';
+      holder.innerHTML = CardRenderer.spriteDefs();
+      document.body.appendChild(holder);
+    }
+    populateSetup();
+    bindEvents();
   }
 
-  // ---------- Public API ----------
   return {
     init: init,
     startGame: startGame,
     newGame: newGame,
-    playCard: playCard,
     advancePhase: advancePhase,
-    transitFleet: transitFleet,
-    attackWithWorkforce: attackWithWorkforce,
-    endTurn: function() {
-      if (!game || game.gameOver) return;
-      // Skip remaining phases and end turn
-      game.currentPhase = PHASES.length - 1;
-      runEndStep();
-      endTurn();
-    }
+    endTurn: endTurn,
+    // Exposed so the state is reachable for debugging and for the headless
+    // harness. The old build kept `game` module-private, which is why the
+    // review had to patch the file before it could simulate a single game.
+    getState: function() { return state; },
+    setState: function(next) { state = next; render(); },
+    legalActions: legal,
+    apply: function(action) { return dispatch(action); },
+    render: render
   };
 }));

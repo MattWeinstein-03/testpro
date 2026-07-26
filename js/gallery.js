@@ -146,7 +146,8 @@
         return false;
       }
       // Search filter
-      if (state.searchQuery && card.name.toLowerCase().indexOf(state.searchQuery) === -1) {
+      var haystack = (card.name + ' ' + (card.rulesText || '') + ' ' + (card.loreText || '')).toLowerCase();
+      if (state.searchQuery && haystack.indexOf(state.searchQuery) === -1) {
         return false;
       }
       return true;
@@ -181,11 +182,8 @@
     var html = '';
     for (var i = 0; i < state.filteredCards.length; i++) {
       var card = state.filteredCards[i];
-      var cacheKey = card.id;
-      if (!svgCache[cacheKey]) {
-        svgCache[cacheKey] = CardRenderer.renderCard(card, { size: 'normal' });
-      }
-      html += svgCache[cacheKey];
+      // Shared with the playtest board via CardRenderer's cache.
+      html += CardRenderer.renderCached(card, { size: 'normal' });
     }
     elements.grid.innerHTML = html;
   }
@@ -218,8 +216,22 @@
       detailsHtml += '<p><span class="detail-label">Rarity:</span> ' + escapeHtml(card.rarity) + '</p>';
       detailsHtml += '<p><span class="detail-label">Cost:</span> ' + formatCostText(card.cost) + '</p>';
 
-      if (card.abilities) {
-        detailsHtml += '<p><span class="detail-label">Abilities:</span> ' + escapeHtml(card.abilities) + '</p>';
+      if (card.rulesText) {
+        detailsHtml += '<p><span class="detail-label">Rules:</span> ' + escapeHtml(card.rulesText) + '</p>';
+      }
+
+      if (card.produces) {
+        var prod = Object.keys(card.produces).filter(function(r) { return card.produces[r]; })
+          .map(function(r) { return card.produces[r] + ' ' + r; }).join(', ');
+        if (prod) {
+          detailsHtml += '<p><span class="detail-label">Produces each Upkeep:</span> ' +
+            escapeHtml(prod) + ' and ' + Number(card.goods || 0) + ' Goods</p>';
+        }
+      }
+
+      if (card.loreText) {
+        detailsHtml += '<p><span class="detail-label">Design intent:</span> <span style="color:#9aa">' +
+          escapeHtml(card.loreText) + '</span></p>';
       }
 
       if (card.flavorText) {
@@ -237,10 +249,12 @@
       // Contract-specific details
       if (card.type === 'Contracts') {
         if (card.requirements) {
-          detailsHtml += '<p><span class="detail-label">Requirements:</span> ' + escapeHtml(card.requirements) + '</p>';
+          // Was escapeHtml(object) -> "[object Object]" on all 15 Contracts.
+          detailsHtml += '<p><span class="detail-label">Requirements:</span> ' +
+            escapeHtml(CardRenderer.formatRequirements(card)) + '</p>';
         }
         if (card.fpReward !== undefined) {
-          detailsHtml += '<p><span class="detail-label">FP Reward:</span> ' + card.fpReward + '</p>';
+          detailsHtml += '<p><span class="detail-label">FP Reward:</span> ' + Number(card.fpReward) + '</p>';
         }
       }
 

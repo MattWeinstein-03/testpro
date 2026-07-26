@@ -19,6 +19,7 @@
   <nav class="nav-tabs">
     <button class="nav-tab active" data-tab="gallery-view">Gallery</button>
     <button class="nav-tab" data-tab="playtest-view">Playtest</button>
+    <button class="nav-tab" data-tab="rulebook-view">Rules</button>
   </nav>
 
   <!-- Main Content -->
@@ -74,10 +75,20 @@
         <p class="setup-subtitle">2-Player Hot-Seat - Test your supply chain strategies</p>
         <div class="setup-options">
           <div class="setup-option">
-            <label>Deck Type</label>
-            <select id="deck-type">
-              <option value="random">Random Balanced Deck (40 cards)</option>
-            </select>
+            <label for="deck-p1">Player 1 Deck</label>
+            <select id="deck-p1"></select>
+          </div>
+          <div class="setup-option">
+            <label for="deck-p2">Player 2 Deck</label>
+            <select id="deck-p2"></select>
+          </div>
+          <div class="setup-option">
+            <label for="game-seed">Seed (blank = random)</label>
+            <input type="text" id="game-seed" class="search-input" placeholder="e.g. print-test-4">
+          </div>
+          <div class="setup-option">
+            <label for="pass-device-toggle">Hide hand on turn change</label>
+            <input type="checkbox" id="pass-device-toggle" checked>
           </div>
           <div class="setup-option">
             <label>Starting Health</label>
@@ -85,12 +96,13 @@
           </div>
           <div class="setup-option">
             <label>Win Condition</label>
-            <span>10 FP or reduce opponent to 0 Health</span>
+            <span>10 FP, opponent at 0 Health, or opponent decks out</span>
           </div>
         </div>
         <div class="setup-info">
-          Each player gets a shuffled 40-card deck with balanced card types:<br>
-          8+ Infrastructure, 8+ Workforce, 6+ Fleet, 8+ Operations, 5+ Disruptions, 3+ Contracts
+          Each player gets a shuffled 40-card deck built to the chosen archetype's
+          type minimums. Entering the same seed with the same two archetypes
+          replays an identical game, which is how balance results are compared.
         </div>
         <button class="btn-start-game" onclick="Playtest.startGame()">Start Game</button>
       </div>
@@ -100,6 +112,7 @@
         <!-- Turn Info & Controls -->
         <div class="turn-info-bar">
           <span id="turn-info">Turn 1 - Player 1 - Upkeep</span>
+          <span id="seed-readout" class="seed-readout"></span>
           <div class="game-controls">
             <button id="btn-next-phase" class="btn-primary" onclick="Playtest.advancePhase()">Next Phase</button>
             <button id="btn-end-turn" onclick="Playtest.endTurn()">End Turn</button>
@@ -109,6 +122,9 @@
 
         <!-- Phase Bar -->
         <div id="phase-bar"></div>
+
+        <!-- Requisition: the safety valve against a hand of uncastable cards -->
+        <div id="requisition-bar" style="display:none;"></div>
 
         <!-- Opponent Info -->
         <div class="player-info" id="p2-info">
@@ -160,7 +176,10 @@
           </div>
         </div>
 
-        <!-- Contracts -->
+        <!-- Blocker declaration prompt (defender acts here) -->
+        <div id="combat-prompt" style="display:none;"></div>
+
+        <!-- Contracts: every clause shown with met/unmet state -->
         <div class="contracts-section">
           <h4>Active Contracts</h4>
           <div id="active-contracts"></div>
@@ -192,6 +211,24 @@
 
         <!-- Game Log -->
         <div class="log-section" id="game-log"></div>
+
+        <!-- Pass-device interstitial: hot-seat hands must not be exposed
+             across the turn transition. -->
+        <div id="pass-device" style="display:none;">
+          <div class="pass-device-box">
+            <h2>Pass the device</h2>
+            <p>Hand it to <strong id="pass-device-name">Player 2</strong>.</p>
+            <button class="btn-primary" id="btn-pass-continue">I am ready</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Click-to-zoom for any card on the board or in hand -->
+      <div id="zoom-overlay">
+        <div class="zoom-content">
+          <button class="modal-close" id="zoom-close" title="Close">&times;</button>
+          <div id="zoom-body"></div>
+        </div>
       </div>
 
       <!-- Message Toast -->
@@ -204,18 +241,42 @@
         <button class="btn-new-game" onclick="Playtest.newGame()">Play Again</button>
       </div>
     </section>
+
+    <!-- Rulebook View: the same frozen glossary the engine reads, which is what
+         becomes the printed rulebook insert. -->
+    <section id="rulebook-view" class="view-section">
+      <div id="rulebook-content"></div>
+    </section>
   </main>
 
   <!-- Scripts (loaded in dependency order) -->
+  <!-- Rules vocabulary and pure core first: nothing below may define a rule. -->
+  <script src="js/glossary.js"></script>
+  <script src="js/rng.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/card-schema.js"></script>
   <script src="js/card-data.js"></script>
+  <script src="js/rules.js"></script>
+  <!-- View layer: renders state, never mutates it. -->
   <script src="js/svg-art.js"></script>
   <script src="js/card-renderer.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/playtest.js"></script>
+  <script src="js/rulebook.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Validate the set at the load boundary so a typo'd requirement key is a
+      // reported error rather than a contract that is silently easier.
+      var report = CardSchema.validateSet(CardData);
+      if (!report.ok) {
+        console.error('Card set failed validation:', report.errors);
+      }
+      if (report.warnings.length) {
+        console.warn('Card set warnings:', report.warnings);
+      }
       Gallery.init();
       Playtest.init();
+      Rulebook.init();
     });
   </script>
 </body>
