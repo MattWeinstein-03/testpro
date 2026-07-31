@@ -245,9 +245,13 @@ var OPERATION_COSTS = {
  * The rider is 1 damage on a cheap outage, 2 on a Rare, 3 on a Mythic. It is
  * printed on the card face (rulesText is generated from these effects), it is
  * thematically the point of the card - an outage costs the customer - and it
- * gives a control deck a clock without turning it into a burn deck: 12
- * Disruptions in the printed disruption recipe is at most 14 damage, and
- * stored Goods still soak 2 of it per turn.
+ * gives a control deck a clock without turning it into a burn deck: the densest
+ * printed recipe is 10 Disruptions (DECK_MINIMUMS.disruption in rules.js), the
+ * riders are spread across 25 cards so a deck only ever sees a slice of them,
+ * and stored Goods still soak the first 1 damage of each turn - soakPerTurn is
+ * 1 as of this pass, not 2. At 2 a stockpile absorbed the rider outright and
+ * this whole change did nothing; at 1 it delays the clock without cancelling
+ * it, which is the difference between a control deck and a burn deck.
  */
 var DISRUPTIONS = {
   '161': { cost: c(0, 1), effects: [{ do: 'disable', what: 'Workforce', who: 'opponent', count: 2, turns: 2 }, { do: 'damage', amount: 1 }] },
@@ -287,14 +291,25 @@ var DISRUPTIONS = {
  * Measured: combat won 46% of games and the 10 FP race won 31%, in a game
  * about moving goods. Three printed values on these 15 cards were wrong.
  *
- *   fpReward  A Common Contract now pays 3 and a Mythic pays 7, so the 10 FP
- *             race is three or four fulfilled Contracts rather than five. At
- *             2 FP a Common, a delivery deck needed five successful deliveries
- *             to win while an aggro deck needed roughly seven attack steps.
- *   cargo     Was 1-5 Goods; now 1-4. A Contract whose Cargo exceeds the
+ *   fpReward  Printed range is 1-3: 1 on the two cheapest one-clause Contracts
+ *             (191, 193), 2 across the body of the set, 3 on the two Mythics
+ *             (199, 200). The 10 FP race is therefore roughly four to five
+ *             fulfilled Contracts, against the seven or so attack steps an
+ *             aggro deck needs - delivery is the faster clock, and it is the
+ *             clock the rest of the pass feeds. Nothing prints above 3 on
+ *             purpose: at 3 FP the two Mythics are a third of a win each, and
+ *             any higher makes resolving one expensive Contract the game rather
+ *             than running a supply chain that keeps resolving them.
+ *   cargo     Printed range is 2-5 Goods. A Contract whose Cargo exceeds the
  *             Capacity of the Fleet clause that satisfies it can only be paid
  *             over two trips, which turned every delivery into a two-turn
- *             commitment. Cargo is now payable by one loaded Fleet.
+ *             commitment. So the 13 Contracts at 2-4 are each payable by one
+ *             loaded Fleet - 17 of the 35 Fleet in the set print Capacity 4 or
+ *             better - and only the two Mythics sit at 5, where the card
+ *             already demands three Fleet (199) or two (200) and the load is
+ *             meant to be spread across the fleet it asks you to field. Cargo
+ *             never sits at 1: delivery has to cost stock, or the Contract is
+ *             just a resource tax.
  *   clauses   Air (5 cards), Rail (4) and Digital (3) are the scarcest
  *             subtypes in the set, and 187/192/197/198/200 stacked them on top
  *             of Capacity, Speed and Workforce clauses. The scarce-subtype

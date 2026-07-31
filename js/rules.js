@@ -103,13 +103,15 @@
    *
    *   disruption ran 18 Disruptions, 6 Workforce and 4 Contracts: it could
    *     dismantle a supply chain and then had nothing to win with. It measured
-   *     33.9%. It now runs 12 Disruptions and 6 Contracts - still the densest
+   *     33.9%. It now runs 10 Disruptions and 8 Contracts - still the densest
    *     Disruption deck in the box, but with a clock of its own.
    *   engine ran 4 Contracts on 18 Infrastructure: it built the best economy
-   *     in the game and could not spend it. 33.3%. Now 7 Contracts, 9 Fleet.
-   *   aggro measured 70.3% on 18 Workforce. Now 16, and the two slots go to
-   *     Fleet, so an aggro deck that wants to race also has to load cargo.
-   *   every deck now carries at least 4 Contracts and 6 Fleet, because a deck
+   *     in the game and could not spend it. 33.3%. Now 9 Contracts and 10
+   *     Fleet, paid for out of Infrastructure and Disruptions.
+   *   aggro measured 70.3% on 18 Workforce. Now 15, and the freed slots go to
+   *     Fleet and Contracts, so an aggro deck that wants to race also has to
+   *     load cargo.
+   *   every deck now carries at least 7 Contracts and 8 Fleet, because a deck
    *     with no delivery package cannot use the game's primary win condition.
    */
   var DECK_MINIMUMS = {
@@ -442,8 +444,8 @@
       draw: function(player, n) {
         for (var i = 0; i < n; i++) {
           if (!player.deck.length) {
-            // Deck-out is a loss. This is the termination guarantee: two 40 card
-            // decks and one draw per turn means every game ends.
+            // Deck-out is a loss. This is the termination guarantee: two 52
+            // card decks and three draws per turn means every game ends.
             state.gameOver = true;
             state.winner = state.players[0] === player ? 1 : 0;
             state.winReason = player.name + ' ran out of cards';
