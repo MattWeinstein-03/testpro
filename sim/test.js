@@ -145,6 +145,10 @@ var rulebook = Glossary.GLOBAL_RULES.join(' ');
   ['Upkeep income', /take 3 Capital plus 1 resource/],
   ['the starting Supply Chain Health', /starts on 20 Supply Chain Health/],
   ['standing haulage (first Transit costs no Fuel)', /first Transit of your turn costs no Fuel/],
+  // The Transit budget caps the game's primary win condition and is enforced in
+  // `canTransit`, so a player with a fourth loaded Fleet needs it in the box.
+  ['the Transit budget', /Transit budget: you may Transit \d+ Fleet each turn/],
+  ['that Operations can raise the Transit budget', /extra Transit actions add to your budget/],
   ['fulfilling more than one Contract in a turn', /as many Contracts/],
   ['the barricade Toughness', /barricade \(Power 0, Toughness 2\)/],
   ['the Goods damage buffer', /removes 1 stored Goods instead/]
@@ -171,7 +175,9 @@ var rulebook = Glossary.GLOBAL_RULES.join(' ');
   ['starting Supply Chain Health', /starts on (\d+) Supply Chain Health/, 'startingHealth'],
   ['the Fulfillment Point target', /reaching (\d+) Fulfillment Points/, 'winFp'],
   ['the Goods damage buffer', /first (\d+) damage you take each turn/, 'soakPerTurn'],
-  ['the Transit Fuel cost', /pay (\d+) Fuel and exhaust one untapped Workforce/, 'transitFuel']
+  ['the Transit Fuel cost', /pay (\d+) Fuel and exhaust one untapped Workforce/, 'transitFuel'],
+  ['Transit budget', /you may Transit (\d+) Fleet each turn/, 'transitBudget'],
+  ['flexible Upkeep income', /plus (\d+) resource of your choice/, 'flexIncome']
 ].forEach(function(triple) {
   var m = rulebook.match(triple[1]);
   ok('rulebook prints the same ' + triple[0] + ' the engine uses',

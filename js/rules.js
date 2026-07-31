@@ -66,7 +66,14 @@
      * matter - and at a table it is just "discard down to 3 of each".
      */
     reserveLimit: 3,
-    transitBudget: 3,       // Fleet movements per turn before Operations
+    /**
+     * Fleet movements per turn. Operations with `extraTransit` raise it for the
+     * turn; nothing lowers it. This is a tempo cap on the primary win
+     * condition, so it is printed in Glossary.GLOBAL_RULES next to the other
+     * Transit rules - a player holding a fourth loaded Fleet has to be able to
+     * find the limit in the box.
+     */
+    transitBudget: 3,
     soakPerTurn: 1,         // damage absorbed by stored Goods each turn
     transitFuel: 1,         // Fuel per transit, waived by Sustainable
     /**

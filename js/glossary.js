@@ -60,6 +60,7 @@
     'Goods are produced onto Infrastructure in your Source Zone. Transit loads Goods from Source onto a Fleet, up to that Fleet\'s Capacity.',
     'Transit: pay 1 Fuel and exhaust one untapped Workforce as crew, then move the Fleet to your Customer Zone. Automated Fleet need no crew.',
     'Standing haulage: the first Transit of your turn costs no Fuel. Later Transits that turn pay 1 Fuel each as normal.',
+    'Transit budget: you may Transit 3 Fleet each turn, however many Fleet you control. Operations that grant extra Transit actions add to your budget for that turn.',
     'You may fulfil as many Contracts in your Delivery step as you can pay the Goods for.',
     'Fulfilling a Contract consumes the printed Goods from Fleet in your Customer Zone. The Fleet used returns to your Network Zone exhausted.',
     'Combat: attackers exhaust. The defender may block with any Workforce that did not attack, or with an untapped Fleet acting as a barricade (Power 0, Toughness 2).',
