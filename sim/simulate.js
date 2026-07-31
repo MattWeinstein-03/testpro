@@ -242,6 +242,21 @@ function report(all, matrix, showCards) {
     '  max ' + Math.max.apply(null, peaks));
   var reached = peaks.filter(function(v) { return v >= 10; }).length;
   console.log('players reaching 10 FP: ' + reached + '/' + peaks.length + ' (' + pct(reached, peaks.length) + ')');
+  // NOTE ON THIS NUMBER: it cannot exceed half the FP win share. The game ends
+  // the instant a player reaches the FP target, so exactly one player per
+  // FP-decided game ever touches 10, and the denominator here counts both
+  // seats. "Players reaching 10 FP" is therefore FP-win-share / 2 by
+  // construction - it measures nothing the win split does not already say.
+  // What a designer actually wants to know is whether the race was live for
+  // the player who lost it, so that is measured directly below.
+  var losers = [];
+  all.forEach(function(r) {
+    if (r.winner === null) return;
+    losers.push(r.fpPeak[1 - r.winner]);
+  });
+  console.log('peak FP of the LOSING player: mean ' + mean(losers).toFixed(2) + '  median ' + median(losers) +
+    '  within 3 FP of the target: ' + pct(losers.filter(function(v) { return v >= 7; }).length, losers.length) +
+    '  (this is the real "was the race live" measure)');
   var contracts = [];
   all.forEach(function(r) { contracts.push(r.contracts[0], r.contracts[1]); });
   console.log('contracts fulfilled per player: mean ' + mean(contracts).toFixed(2) +
@@ -333,7 +348,8 @@ function printReadiness() {
   console.log('cost curve (total pips): ' + Object.keys(curve).sort(function(a, b) { return a - b; })
     .map(function(k) { return k + ':' + curve[k]; }).join('  '));
   console.log('keywords: ' + Object.keys(kw).map(function(k) { return k + ' ' + kw[k]; }).join(', '));
-  console.log('components needed per 2-player game: 40 Goods tokens, 2 Health dials (20), 2 FP trackers (10),');
+  console.log('components needed per 2-player game: 40 Goods tokens, 2 Health dials (' +
+    Rules.DEFAULTS.startingHealth + '), 2 FP trackers (' + Rules.DEFAULTS.winFp + '),');
   console.log('  25 resource tokens per type (Capital/Labor/Fuel/Data/Time), Disabled markers x8');
   console.log('rules text over ' + TEXT_BUDGET + ' chars: ' + overlong.length + '/' + CardData.length +
     (overlong.length ? ' -> ' + overlong.slice(0, 8).map(function(o) { return o.id + '(' + o.len + ')'; }).join(', ') : ''));

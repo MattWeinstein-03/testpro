@@ -108,7 +108,7 @@ for (var h = 0; h < games; h++) {
         if (Rules.canTransit(s, 0, f)) { blocked.movable++; return; }
         if (!Rules.isReady(f)) blocked.notReady++;
         else if (p2.transitBudget <= 0) blocked.noBudget++;
-        else if (p2.resources.Fuel < (Rules.hasKeyword(f, 'Sustainable') ? 0 : s.config.transitFuel)) blocked.noFuel++;
+        else if (p2.resources.Fuel < Rules.transitCost(s, 0, f)) blocked.noFuel++;
         else blocked.noCrew++;
       });
     }

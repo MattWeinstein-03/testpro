@@ -136,9 +136,47 @@ var rulebook = Glossary.GLOBAL_RULES.join(' ');
   ['the Fleet-returns-exhausted rule', /returns to your Network Zone exhausted/],
   ['the blocking rule', /may block/],
   ['the Arriving restriction', /Arriving/],
-  ['Requisition', /Requisition/]
+  ['Requisition', /Requisition/],
+  // BALANCE PASS 2 printed rules. Each of these is enforced by the engine and
+  // stated on no card face, so the rulebook is the only place a player at a
+  // table could learn it.
+  ['the printed deck size', /deck is 52 cards/],
+  ['the draw step and the play/draw penalty', /Draw 3 cards.*1 fewer card/],
+  ['Upkeep income', /take 3 Capital plus 1 resource/],
+  ['the starting Supply Chain Health', /starts on 20 Supply Chain Health/],
+  ['standing haulage (first Transit costs no Fuel)', /first Transit of your turn costs no Fuel/],
+  ['fulfilling more than one Contract in a turn', /as many Contracts/],
+  ['the barricade Toughness', /barricade \(Power 0, Toughness 2\)/],
+  ['the Goods damage buffer', /removes 1 stored Goods instead/]
 ].forEach(function(pair) {
   ok('rulebook documents ' + pair[0], pair[1].test(rulebook));
+});
+
+/**
+ * The printed numbers in the rulebook must equal the numbers the engine uses.
+ *
+ * This is the print constraint as an assertion. Cardboard cannot be patched:
+ * if a balance pass changes the deck size, the draw step, Upkeep income,
+ * starting Health or the damage buffer and the rulebook still prints the old
+ * value, the physical game and the digital game are different games. Every
+ * dial the tuning pass touched is checked against its printed text here.
+ */
+[
+  ['deck size', /deck is (\d+) cards/, 'deckSize'],
+  ['opening hand', /Opening hand is (\d+) cards/, 'openingHand'],
+  ['draw per turn', /Draw (\d+) cards in your Draw step/, 'drawPerTurn'],
+  ['hand limit', /[Hh]and limit is (\d+) cards/, 'maxHand'],
+  ['Upkeep Capital income', /take (\d+) Capital plus/, 'baseIncome'],
+  ['resource reserve limit', /keep up to (\d+) of each resource/, 'reserveLimit'],
+  ['starting Supply Chain Health', /starts on (\d+) Supply Chain Health/, 'startingHealth'],
+  ['the Fulfillment Point target', /reaching (\d+) Fulfillment Points/, 'winFp'],
+  ['the Goods damage buffer', /first (\d+) damage you take each turn/, 'soakPerTurn'],
+  ['the Transit Fuel cost', /pay (\d+) Fuel and exhaust one untapped Workforce/, 'transitFuel']
+].forEach(function(triple) {
+  var m = rulebook.match(triple[1]);
+  ok('rulebook prints the same ' + triple[0] + ' the engine uses',
+    !!m && Number(m[1]) === Rules.DEFAULTS[triple[2]],
+    (m ? m[1] : 'not printed') + ' vs engine ' + Rules.DEFAULTS[triple[2]]);
 });
 
 // Every keyword printed on a card must have a mechanical definition, because a
@@ -517,8 +555,8 @@ ok('most Main Phases offer at least one play', deadPct < 45,
 describe('Deck construction');
 // ===========================================================================
 Rules.ARCHETYPES.forEach(function(arch) {
-  var deck = Rules.buildDeck(CardData, Rules.Rng.create(3), { archetype: arch, size: 50 });
-  ok('archetype "' + arch + '" builds a full deck', deck.length === 50, deck.length);
+  var deck = Rules.buildDeck(CardData, Rules.Rng.create(3), { archetype: arch, size: Rules.DEFAULTS.deckSize });
+  ok('archetype "' + arch + '" builds a full deck', deck.length === Rules.DEFAULTS.deckSize, deck.length);
   var legendaries = deck.filter(function(c) { return (c.keywords || []).indexOf('Legendary') !== -1; });
   var names = legendaries.map(function(c) { return c.name; });
   ok('archetype "' + arch + '" respects the Legendary singleton rule',
@@ -527,36 +565,129 @@ Rules.ARCHETYPES.forEach(function(arch) {
 
 
 // ===========================================================================
-describe('Balance: no single strategy dominates');
+describe('Balance: measured targets, locked against regression');
 // ===========================================================================
-var winsBy = {};
-var gamesBy = {};
-var strategies = ['delivery', 'aggro', 'disruption', 'engine', 'greedy'];
-strategies.forEach(function(n) { winsBy[n] = 0; gamesBy[n] = 0; });
-var seedN = 0;
-strategies.forEach(function(a) {
-  strategies.forEach(function(b) {
-    if (a === b) return;
-    for (var rep = 0; rep < 3; rep++) {
-      seedN++;
-      var r = playGame(1000 + seedN, a, b);
-      gamesBy[a]++; gamesBy[b]++;
-      if (r.gameOver && r.winner !== null) {
-        winsBy[r.winner === 0 ? a : b]++;
-      }
+/**
+ * BALANCE PASS 2 lock.
+ *
+ * The old assertions here were "no strategy above 85%, none below 10%". Both
+ * passed while the aggro deck won 72% of its games and the Fulfillment race -
+ * the win condition this game is named after - decided a third of them. A
+ * balance assertion that a broken game satisfies is not an assertion.
+ *
+ * These run the same batch the balance report runs (sim/simulate.js), over the
+ * real printed archetype decks and both seats, and assert the numbers the
+ * tuning pass was aimed at. The bands are the design targets plus the sampling
+ * noise of this batch size; a change that moves any of them out of band is a
+ * balance regression and should fail here rather than be discovered in a
+ * print run.
+ */
+var Sim = require('./simulate.js');
+var GAMES_PER_MATCHUP = 48;      // 25 matchups -> 1200 games, about 2 seconds
+
+var batch = [];
+var matrix = {};
+var bseed = 1;
+Sim.STRATEGIES.forEach(function(A) {
+  Sim.STRATEGIES.forEach(function(B) {
+    for (var g = 0; g < GAMES_PER_MATCHUP; g++) {
+      var rec = Sim.runGame({
+        seed: bseed++,
+        archetypes: [A.archetype, B.archetype],
+        policies: [A.policy, B.policy]
+      });
+      batch.push(rec);
+      matrix[A.policy] = matrix[A.policy] || {};
+      var cell = matrix[A.policy][B.policy] = matrix[A.policy][B.policy] || { w: 0, l: 0, d: 0 };
+      if (rec.winner === 0) cell.w++; else if (rec.winner === 1) cell.l++; else cell.d++;
     }
   });
 });
-var rates = strategies.map(function(n) {
-  return { n: n, r: gamesBy[n] ? (winsBy[n] / gamesBy[n]) * 100 : 0 };
-}).sort(function(x, y) { return y.r - x.r; });
-console.log('  win rates: ' + rates.map(function(x) { return x.n + ' ' + x.r.toFixed(0) + '%'; }).join(', '));
-ok('no strategy wins more than 85% of its games', rates[0].r <= 85,
+
+function meanOf(list) { return list.reduce(function(a, b) { return a + b; }, 0) / list.length; }
+function shareOf(type) {
+  return 100 * batch.filter(function(r) { return r.winType === type; }).length / batch.length;
+}
+
+var fpShare = shareOf('fp');
+var healthShare = shareOf('health');
+var deckoutShare = shareOf('deckout');
+var peaks = [], contracts = [], lengths = [];
+batch.forEach(function(r) {
+  peaks.push(r.fpPeak[0], r.fpPeak[1]);
+  contracts.push(r.contracts[0], r.contracts[1]);
+  lengths.push(r.turns);
+});
+
+console.log('  measured over ' + batch.length + ' games: fp ' + fpShare.toFixed(1) +
+  '%, health ' + healthShare.toFixed(1) + '%, deckout ' + deckoutShare.toFixed(1) + '%');
+
+// Delivery is the spine of the game. Combat is a real second path, not the
+// fastest one, and exhaustion is the backstop for a game where neither happens.
+ok('the Fulfillment race decides most games (50-65%)',
+  fpShare >= 50 && fpShare <= 65, fpShare.toFixed(1) + '%');
+ok('combat stays a real win condition, not a decoration (25-38%)',
+  healthShare >= 25 && healthShare <= 38, healthShare.toFixed(1) + '%');
+ok('exhaustion is a backstop, not an outcome (under 10%)',
+  deckoutShare < 10, deckoutShare.toFixed(1) + '%');
+
+// The FP race has to be live for both players, not just reachable by the winner.
+ok('mean peak Fulfillment Points per player is above 5.5', meanOf(peaks) > 5.5,
+  meanOf(peaks).toFixed(2) + ' of the 10 needed');
+ok('a player fulfils more than 3 Contracts in an average game', meanOf(contracts) > 3.0,
+  meanOf(contracts).toFixed(2) + ' contracts per player');
+
+// A table game has to fit in an evening, and a game that ends on turn 12
+// never had a supply chain in it.
+ok('mean game length is 18-25 turns', meanOf(lengths) >= 18 && meanOf(lengths) <= 25,
+  meanOf(lengths).toFixed(1) + ' turns');
+
+// Win rates, aggregated over BOTH seats so a matchup edge is not confused with
+// a first-player edge.
+var keys = Object.keys(matrix);
+var rates = [];
+var worstCell = { label: '', rate: 0 };
+keys.forEach(function(a) {
+  var w = 0, t = 0;
+  keys.forEach(function(b) {
+    var first = matrix[a][b], second = matrix[b][a];
+    var wins = first.w + second.l;
+    var total = first.w + first.l + first.d + second.w + second.l + second.d;
+    w += wins; t += total;
+    if (a !== b && 100 * wins / total > worstCell.rate) {
+      worstCell = { label: a + ' beats ' + b, rate: 100 * wins / total };
+    }
+  });
+  rates.push({ n: a, r: 100 * w / t });
+});
+rates.sort(function(x, y) { return y.r - x.r; });
+console.log('  win rates: ' + rates.map(function(x) { return x.n + ' ' + x.r.toFixed(1) + '%'; }).join(', '));
+
+ok('the best archetype wins no more than 62% of its games', rates[0].r <= 62,
   rates[0].n + ' at ' + rates[0].r.toFixed(1) + '%');
-ok('no strategy wins less than 10% of its games', rates[rates.length - 1].r >= 10,
+ok('the worst archetype wins at least 35% of its games', rates[rates.length - 1].r >= 35,
   rates[rates.length - 1].n + ' at ' + rates[rates.length - 1].r.toFixed(1) + '%');
-// The old build's only functioning line was free Disruption spam.
-ok('Disruption spam is no longer the best strategy', rates[0].n !== 'disruption', rates[0].n + ' leads');
+ok('no single matchup is worse than 75/25', worstCell.rate <= 75,
+  worstCell.label + ' ' + worstCell.rate.toFixed(1) + '%');
+// Disruption spam was the old build's only functioning line; delivery is the
+// line this game is supposed to be about.
+ok('Disruption spam is not the best strategy', rates[0].n !== 'disruption', rates[0].n + ' leads');
+ok('the delivery deck is not the worst strategy', rates[rates.length - 1].n !== 'delivery',
+  rates[rates.length - 1].n + ' is last');
+
+var p1 = batch.filter(function(r) { return r.winner === 0; }).length;
+var decided = batch.filter(function(r) { return r.winner !== null; }).length;
+var p1rate = 100 * p1 / decided;
+ok('going first is an edge, not a decision (48-56%)', p1rate >= 48 && p1rate <= 56,
+  p1rate.toFixed(1) + '%');
+
+// A card nobody ever plays is a card that should not have been printed.
+var everPlayed = {};
+batch.forEach(function(r) { Object.keys(r.played).forEach(function(id) { everPlayed[id] = true; }); });
+var unplayed = CardData.filter(function(c) { return !everPlayed[c.id]; });
+ok('all 200 printed cards get played at least once', unplayed.length === 0,
+  (CardData.length - unplayed.length) + '/' + CardData.length +
+  (unplayed.length ? ' - never: ' + unplayed.slice(0, 6).map(function(c) { return c.id; }).join(',') : ''));
 
 // ===========================================================================
 console.log('\n' + (failures.length

@@ -1954,7 +1954,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [],
@@ -2056,7 +2056,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [
@@ -2126,7 +2126,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [],
@@ -2404,7 +2404,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [
@@ -2508,7 +2508,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 3
       },
       "keywords": [],
@@ -2824,7 +2824,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [],
@@ -3068,7 +3068,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [],
@@ -3431,7 +3431,7 @@
         "Time": 0
       },
       "stats": {
-        "power": 1,
+        "power": 2,
         "toughness": 2
       },
       "keywords": [
@@ -3545,7 +3545,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Standard last-mile delivery vehicle. Tap: Transport up to 2 Goods along any ground route to a destination Infrastructure. Requires Trucker or Driver workforce to operate.",
       "flavorText": "The workhorse of every delivery fleet.",
       "effects": []
@@ -3568,7 +3568,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 5 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 5 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Long-haul ground transport. Tap: Move up to 5 Goods along highways between Hubs. Requires Long-Haul Trucker workforce. Cannot access last-mile routes.",
       "flavorText": "King of the highway, lord of the lane.",
       "effects": []
@@ -3593,7 +3593,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Can transport perishable goods without spoilage timer advancing. Required for Cold Chain Contracts during ground transit. Tap: Deliver up to 3 perishable Goods.",
       "flavorText": "Keeping it cool from farm to fork.",
       "effects": []
@@ -3618,7 +3618,7 @@
       "keywords": [
         "Rush"
       ],
-      "rulesText": "Rush. Transit: Move to your Customer Zone carrying up to 1 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Rush. Transit: Move to your Customer Zone carrying up to 1 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Rush: Can deliver on the turn it is deployed. Tap: Deliver 1 Goods to any last-mile destination. +1 Speed in urban routes. Ideal for Same-Day Delivery Contracts.",
       "flavorText": "Small, fast, everywhere at once.",
       "effects": []
@@ -3668,7 +3668,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Can carry oversized goods that other vehicles cannot. Tap: Transport up to 4 Goods or 1 oversized token. -1 Speed for every 3 Goods loaded beyond 2.",
       "flavorText": "If it's too big for a box, put it on a flatbed.",
       "effects": []
@@ -3694,7 +3694,7 @@
         "Specialized",
         "Fragile"
       ],
-      "rulesText": "Specialized, Fragile. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized, Fragile. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Can transport liquid and hazardous cargo. Required for fuel and chemical deliveries. Tap: Transport up to 3 liquid Goods. If destroyed, causes Contamination Event in adjacent zone.",
       "flavorText": "Handle with extreme care.",
       "effects": []
@@ -3717,7 +3717,7 @@
         "speed": 1
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 8 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 8 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Intercontinental transport. Tap: Move up to 8 Goods between any two Port-type Infrastructure. Takes 2 turns to arrive. Requires Ship Captain workforce.",
       "flavorText": "Three football fields of floating commerce.",
       "effects": []
@@ -3740,7 +3740,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Connects smaller ports to Mega-Port Complex. Tap: Transport up to 4 Goods between coastal Infrastructure. Can access ports too small for Container Ships.",
       "flavorText": "The little ships that feed the big ones.",
       "effects": []
@@ -3763,7 +3763,7 @@
         "speed": 5
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Fastest standard transport. Tap: Deliver up to 3 Goods to any location in 1 turn regardless of distance. Requires Pilot workforce. Grounded by Natural Disaster disruptions.",
       "flavorText": "When time is worth more than fuel.",
       "effects": []
@@ -3786,7 +3786,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "High-capacity ground transport along rail routes. Tap: Move up to 6 Goods between Rail Terminal type Infrastructure. Requires Train Engineer. Cannot deviate from rail routes.",
       "flavorText": "A mile of cars, a mountain of cargo.",
       "effects": []
@@ -3809,7 +3809,7 @@
         "speed": 4
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Premium rail transport. Tap: Move up to 3 Goods along rail routes at Speed 4. Can connect to Hyperloop Terminal for additional +1 Speed. Immune to traffic Disruptions.",
       "flavorText": "Bullet speed, cargo precision.",
       "effects": []
@@ -3835,7 +3835,7 @@
         "Automated",
         "Fragile"
       ],
-      "rulesText": "Automated, Fragile. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Fragile. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Automated: does not require Workforce to operate. Tap: Deliver up to 3 small Goods to any last-mile destinations simultaneously. Cannot carry items over 5kg each.",
       "flavorText": "The sky darkens with commerce.",
       "effects": []
@@ -3886,7 +3886,7 @@
         "Automated",
         "Specialized"
       ],
-      "rulesText": "Automated, Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Permanent fixed route between two Infrastructure cards. Once placed, continuously moves up to 4 liquid Goods per turn with no Fuel cost. Cannot be rerouted. Tap is automatic.",
       "flavorText": "Invisible, constant, essential.",
       "effects": []
@@ -3936,7 +3936,7 @@
       "keywords": [
         "Automated"
       ],
-      "rulesText": "Automated. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Automated: does not require Workforce. Tap: Transport up to 4 Goods along highway routes. Immune to Driver Shortage. Cannot navigate unpaved or emergency routes.",
       "flavorText": "No cab, no driver, no problem.",
       "effects": []
@@ -3961,7 +3961,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Immune to Piracy, Cargo Theft, and all Combat damage. Tap: Transport up to 4 Goods through any route, ignoring Disruptions that block movement. Required for Military Resupply Contract.",
       "flavorText": "Nothing stops a convoy with armed escort.",
       "effects": []
@@ -3986,7 +3986,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Can navigate Arctic routes inaccessible to other ships. Tap: Transport up to 4 Goods via polar route, reducing transit time by 1 turn for intercontinental shipping. Immune to weather Disruptions.",
       "flavorText": "Where others see ice, we see a shortcut.",
       "effects": []
@@ -4011,7 +4011,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Cannot be targeted by Piracy or Sanctions disruptions (undetectable). Tap: Transport up to 3 Goods via any sea route while completely hidden. Opponents cannot see cargo contents.",
       "flavorText": "Beneath the waves, beyond the law.",
       "effects": []
@@ -4061,7 +4061,7 @@
       "keywords": [
         "Automated"
       ],
-      "rulesText": "Automated. Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated. Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Fastest ground transport. Requires Hyperloop Terminal at both ends. Tap: Instantly deliver up to 2 Goods between connected Hyperloop Terminals. Automated: no Workforce needed.",
       "flavorText": "Near-vacuum speed, zero-carbon delivery.",
       "effects": []
@@ -4087,7 +4087,7 @@
         "Rush",
         "Fragile"
       ],
-      "rulesText": "Rush, Fragile. Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Rush, Fragile. Transit: Move to your Customer Zone carrying up to 2 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Deliver to any location on the board in 0 transit time. Tap: Instantly deliver up to 2 Goods anywhere, bypassing all routes and Disruptions. Single use: sacrifice after activation.",
       "flavorText": "Point-to-point, pole-to-pole, in thirty minutes.",
       "effects": []
@@ -4110,7 +4110,7 @@
         "speed": 1
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 12 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 12 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Largest cargo capacity in the game. Tap: Transport up to 12 Goods between Mega-Port Complexes. Takes 3 turns to arrive. If Suez Canal Blockage is active, cannot move.",
       "flavorText": "Twenty thousand containers, one destination.",
       "effects": []
@@ -4133,7 +4133,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 8 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 8 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Counts as multiple trucks traveling together. Tap: Transport up to 8 Goods along highway routes. All goods in convoy share protection - Cargo Theft only affects 1 token instead of all.",
       "flavorText": "Strength in numbers, efficiency in formation.",
       "effects": []
@@ -4156,7 +4156,7 @@
         "speed": 2
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Can use both ground and water routes. Tap: Transport up to 3 Goods, switching between land and sea routes mid-transit without stopping at transfer points.",
       "flavorText": "Where roads end, it keeps going.",
       "effects": []
@@ -4182,7 +4182,7 @@
         "Automated",
         "Specialized"
       ],
-      "rulesText": "Automated, Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Specialized. Transit: Move to your Customer Zone carrying up to 3 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Automated: no Workforce needed. Tap: Transport up to 3 Goods at extreme speed along magnetic rail routes. Zero friction means zero Fuel cost. Requires dedicated rail infrastructure.",
       "flavorText": "Floating on magnetic fields at 500 mph.",
       "effects": []
@@ -4233,7 +4233,7 @@
         "Automated",
         "Hub"
       ],
-      "rulesText": "Automated, Hub. Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Hub. Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Acts as both Fleet AND Infrastructure simultaneously. Stores up to 6 Goods while airborne. Tap: Deploy goods to any ground location below. Can reposition each Transit Phase to optimize delivery range.",
       "flavorText": "The warehouse that comes to you.",
       "effects": []
@@ -4259,7 +4259,7 @@
         "Automated",
         "Legendary"
       ],
-      "rulesText": "Automated, Legendary. Transit: Move to your Customer Zone carrying up to 10 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Legendary. Transit: Move to your Customer Zone carrying up to 10 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Cannot be targeted by any Disruption or opponent ability (phased out). Tap: Transport up to 10 Goods via sea route. Goods loaded on Ghost Fleet are hidden from all opponents until delivered.",
       "flavorText": "Ships that sail unseen, cargo that arrives unannounced.",
       "effects": []
@@ -4282,7 +4282,7 @@
         "speed": 1
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 1 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 1 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Tap: Assist 1 Ship-subtype Fleet card, granting it +1 Speed this turn. Can tow disabled Ships back to port. When Container Ship or Mega-Container Ship is blocked, Tugboat can clear the route.",
       "flavorText": "Small but mighty, the harbor's unsung hero.",
       "effects": []
@@ -4305,7 +4305,7 @@
         "speed": 3
       },
       "keywords": [],
-      "rulesText": "Transit: Move to your Customer Zone carrying up to 0 Goods. Costs 1 Fuel and a crew.",
+      "rulesText": "Transit: Move to your Customer Zone carrying up to 0 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew.",
       "loreText": "Cannot carry goods but protects other Fleet cards. Assign to any Fleet card: that card becomes immune to Piracy, Cargo Theft, and Combat damage. Tap: Block 1 Disruption targeting a Fleet card in your zone.",
       "flavorText": "No cargo, all protection.",
       "effects": []
@@ -4331,7 +4331,7 @@
         "Automated",
         "Hub"
       ],
-      "rulesText": "Automated, Hub. Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Hub. Transit: Move to your Customer Zone carrying up to 6 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Automated: no Workforce needed. Carries and deploys Drone-subtype Fleet cards. Tap: Launch up to 3 drone deliveries from current position, each delivering 1 Goods to separate destinations within range.",
       "flavorText": "One ship, a hundred deliveries.",
       "effects": []
@@ -4382,7 +4382,7 @@
         "Automated",
         "Legendary"
       ],
-      "rulesText": "Automated, Legendary. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel and a crew (waived: Automated).",
+      "rulesText": "Automated, Legendary. Transit: Move to your Customer Zone carrying up to 4 Goods. Costs 1 Fuel (waived on your first Transit each turn) and a crew (waived: Automated).",
       "loreText": "Requires Teleportation Array at both origin and destination. Tap: Instantly transport up to 4 Goods between Arrays with no transit time, no fuel cost, and complete Disruption immunity. Legendary - limit 1 per deck.",
       "flavorText": "The final evolution of logistics: making distance irrelevant.",
       "effects": []
@@ -4879,7 +4879,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Gain 1 Fulfillment Point.",
+      "rulesText": "Reduce the Cargo required by your Contracts by 1 this turn. Add 1 Goods to Infrastructure you control.",
       "loreText": "When fulfilling a Contract this turn, gain +2 additional FP if completed on the same turn it was drawn. If not completed this turn, the Contract's FP reward decreases by 1.",
       "flavorText": "The right price at the right moment.",
       "effects": [
@@ -4888,7 +4888,11 @@
           "condition": null,
           "action": [
             {
-              "do": "fp",
+              "do": "cargoDiscount",
+              "amount": 1
+            },
+            {
+              "do": "goods",
               "amount": 1
             }
           ]
@@ -5488,7 +5492,7 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Reduce the Cargo required by your Contracts by 2 this turn. Gain 1 Fulfillment Point.",
+      "rulesText": "Specialized. Reduce the Cargo required by your Contracts by 2 this turn. Take 1 extra Transit action this turn.",
       "loreText": "1 Goods delivered this turn is worth triple toward Contract fulfillment. That delivery is immune to all Disruptions during transit. Gain +1 FP bonus if Contract is luxury-tier.",
       "flavorText": "Premium care for premium cargo.",
       "effects": [
@@ -5501,7 +5505,7 @@
               "amount": 2
             },
             {
-              "do": "fp",
+              "do": "extraTransit",
               "amount": 1
             }
           ]
@@ -5770,7 +5774,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 1 Fleet opponent controls for 2 turns.",
+      "rulesText": "Disable 2 Workforce opponent controls for 2 turns. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "All Port and Dock-type Infrastructure cards are disabled for 2 turns. Ship-subtype Fleet cards cannot load or unload during this time. Players with Union Steward reduce duration to 1 turn.",
       "flavorText": "Solidarity shuts down the world's ports.",
       "effects": [
@@ -5780,10 +5784,14 @@
           "action": [
             {
               "do": "disable",
-              "what": "Fleet",
+              "what": "Workforce",
               "who": "opponent",
-              "count": 1,
+              "count": 2,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -5804,7 +5812,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 2 Fleet opponent controls for 2 turns.",
+      "rulesText": "Disable 2 Fleet opponent controls for 2 turns. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Ship-subtype Fleet cards in transit add 3 turns to their arrival time OR must reroute at double Fuel cost. Lasts 2 turns. Icebreaker Freighters are unaffected.",
       "flavorText": "One ship sideways, and the world holds its breath.",
       "effects": [
@@ -5818,6 +5826,10 @@
               "who": "opponent",
               "count": 2,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -5838,7 +5850,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 2 Infrastructure opponent controls for 1 turn. opponent loses 2 Goods.",
+      "rulesText": "Disable 2 Infrastructure opponent controls for 1 turn. opponent loses 2 Goods. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "All cards with the Automated keyword are disabled for 2 turns. Digital-subtype Infrastructure cannot generate Data resources. Blockchain Ledger Node is destroyed if unprotected.",
       "flavorText": "The screens go dark, the conveyors stop.",
       "effects": [
@@ -5857,6 +5869,10 @@
               "do": "loseGoods",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -5877,7 +5893,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 3 Capital.",
+      "rulesText": "opponent loses 3 Capital. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "All international shipments cost +2 Capital per Goods for 3 turns. Players must pay the tariff or return goods to origin. Free Trade Zone Infrastructure is exempt.",
       "flavorText": "Borders become walls, costs become cliffs.",
       "effects": [
@@ -5890,6 +5906,10 @@
               "resource": "Capital",
               "amount": 3,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -5910,7 +5930,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 2 Fuel.",
+      "rulesText": "opponent loses 2 Fuel. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Fuel costs are doubled for 3 turns. Fleet cards with Fuel cost 3+ cannot be activated unless player pays the premium. Electric and Sustainable vehicles are unaffected.",
       "flavorText": "The price at the pump just broke the budget.",
       "effects": [
@@ -5923,6 +5943,10 @@
               "resource": "Fuel",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -5943,7 +5967,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 2 Goods.",
+      "rulesText": "opponent loses 2 Goods. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Target player discards 2 Goods from any Fleet card currently in transit. If goods are tracked (Track and Trace active), only 1 token is stolen. Security Guard prevents this entirely.",
       "flavorText": "Vanished between waypoints. No witnesses.",
       "effects": [
@@ -5955,6 +5979,10 @@
               "do": "loseGoods",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -5975,7 +6003,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Destroy 1 Fleet opponent controls.",
+      "rulesText": "Destroy 1 Fleet opponent controls. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "Target 1 Ship-subtype Fleet card. It must engage in Combat: Power 3, Toughness 2. If the ship loses, all goods are discarded and the ship is disabled for 2 turns. Military Convoy is immune.",
       "flavorText": "Black flags on the horizon.",
       "effects": [
@@ -5988,6 +6016,10 @@
               "what": "Fleet",
               "who": "opponent",
               "count": 1
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -6008,7 +6040,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 4 Goods.",
+      "rulesText": "opponent loses 4 Goods. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "Target 1 Infrastructure. All Goods stored there become contaminated and must be discarded unless Quality Inspector or Pharmaceutical Clean Room is present. Spreads to adjacent Infrastructure next turn if not contained.",
       "flavorText": "One breach, and the whole batch is compromised.",
       "effects": [
@@ -6020,6 +6052,10 @@
               "do": "loseGoods",
               "amount": 4,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -6040,7 +6076,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Destroy 1 Infrastructure opponent controls.",
+      "rulesText": "Destroy 1 Infrastructure opponent controls. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Destroy 1 target Infrastructure card and all goods stored there. All Fleet cards within 1 route of the destroyed Infrastructure are delayed 2 turns. Underground Bunker Vault is immune.",
       "flavorText": "Nature reminds us who truly holds power.",
       "effects": [
@@ -6053,6 +6089,10 @@
               "what": "Infrastructure",
               "who": "opponent",
               "count": 1
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6073,7 +6113,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 3 Capital.",
+      "rulesText": "opponent loses 3 Capital. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Target player loses 3 Capital immediately. If they cannot pay, they must sacrifice 1 Infrastructure card instead. Compliance Officer prevents this entirely.",
       "flavorText": "The audit found violations. The fine is non-negotiable.",
       "effects": [
@@ -6086,6 +6126,10 @@
               "resource": "Capital",
               "amount": 3,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6106,7 +6150,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 3 Workforce opponent controls for 2 turns.",
+      "rulesText": "Disable 3 Workforce opponent controls for 2 turns. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Workforce cards without the Automated keyword are disabled for 3 turns (workers stay home). Infrastructure capacity halved. Only Automated and Digital operations continue normally.",
       "flavorText": "The world stops turning, but goods must still flow.",
       "effects": [
@@ -6120,6 +6164,10 @@
               "who": "opponent",
               "count": 3,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6140,7 +6188,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent discards 2 cards.",
+      "rulesText": "opponent discards 2 cards. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All active Contracts are worth -1 FP (minimum 1) for 2 turns. Safety Stock Goods cannot be used. Overproduced goods spoil: discard 1 Goods from each Infrastructure at full capacity.",
       "flavorText": "The orders stopped. The warehouses fill.",
       "effects": [
@@ -6152,6 +6200,10 @@
               "do": "discard",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6172,7 +6224,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 2 Fleet opponent controls for 1 turn.",
+      "rulesText": "Disable 2 Fleet opponent controls for 1 turn. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Vehicle-subtype Fleet cards without assigned Workforce cannot be activated for 2 turns. Autonomous vehicles and Automated Fleet are unaffected. Players may pay +2 Labor per Fleet card to override.",
       "flavorText": "Nobody behind the wheel means nothing moves.",
       "effects": [
@@ -6186,6 +6238,10 @@
               "who": "opponent",
               "count": 2,
               "turns": 1
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6206,7 +6262,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 2 Goods. opponent loses 1 Capital.",
+      "rulesText": "opponent loses 2 Goods. opponent loses 1 Capital. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Target 1 international shipment. All goods on that Fleet card are seized (removed from game) unless player has Customs Agent or pays 3 Capital fine. Bonded Warehouse goods are exempt.",
       "flavorText": "Detained at the border. Paperwork insufficient.",
       "effects": [
@@ -6224,6 +6280,10 @@
               "resource": "Capital",
               "amount": 1,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6244,7 +6304,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Destroy 1 Infrastructure opponent controls.",
+      "rulesText": "Destroy 1 Infrastructure opponent controls. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Target 1 Storage-subtype Infrastructure. Destroy half its stored Goods (rounded up). The Infrastructure is disabled for 1 turn. Hazmat goods destroyed this way trigger secondary Contamination Event.",
       "flavorText": "Alarms ring, sprinklers fail, inventory burns.",
       "effects": [
@@ -6257,6 +6317,10 @@
               "what": "Infrastructure",
               "who": "opponent",
               "count": 1
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6277,7 +6341,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 2 Fleet opponent controls for 2 turns.",
+      "rulesText": "Disable 2 Fleet opponent controls for 2 turns. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "All Ship-subtype Fleet cards have their Capacity halved (rounded down) for 3 turns. Container Port throughput reduced by 50%. Players with Mega-Port Complex reduce duration to 2 turns.",
       "flavorText": "The boxes are all in the wrong places.",
       "effects": [
@@ -6291,6 +6355,10 @@
               "who": "opponent",
               "count": 2,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -6311,7 +6379,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 2 Goods.",
+      "rulesText": "opponent loses 2 Goods. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Replace 2 Goods in target player's Infrastructure with counterfeit tokens (look identical). Counterfeit goods cause Contract failure when delivered. Quality Inspector reveals and removes counterfeits.",
       "flavorText": "Identical on the outside, worthless on the inside.",
       "effects": [
@@ -6323,6 +6391,10 @@
               "do": "loseGoods",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6343,7 +6415,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "each player mills 3 cards. each player loses 2 of each resource. Deal 2 damage to opposing Supply Chain Health.",
+      "rulesText": "each player mills 3 cards. each player loses 2 of each resource. Deal 3 damage to opposing Supply Chain Health.",
       "loreText": "All players simultaneously: discard top 3 cards of their decks, lose 2 resources of each type, and all Fleet cards in transit are delayed 2 turns. The player with fewest Disruptions in discard pile draws 3 cards.",
       "flavorText": "The thing that couldn't happen just did.",
       "effects": [
@@ -6364,7 +6436,7 @@
             },
             {
               "do": "damage",
-              "amount": 2
+              "amount": 3
             }
           ]
         }
@@ -6385,7 +6457,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "opponent loses 1 of each resource.",
+      "rulesText": "opponent loses 1 of each resource. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Choose 1 type of goods. That goods type cannot be traded, transported, or used for Contract fulfillment for 3 turns across all players. Submarine Cargo Vessel ignores this restriction.",
       "flavorText": "By order of government, this trade route is closed.",
       "effects": [
@@ -6398,6 +6470,10 @@
               "resource": "all",
               "amount": 1,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6418,7 +6494,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 1 Infrastructure opponent controls for 2 turns. opponent loses 1 Data.",
+      "rulesText": "Disable 1 Infrastructure opponent controls for 2 turns. opponent loses 1 Data. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Digital-subtype Infrastructure disabled for 1 turn. Data resource generation stopped for 2 turns. Cards requiring Data to operate are suspended. Blockchain Ledger Node prevents this for its controller.",
       "flavorText": "Error 500: Supply chain not found.",
       "effects": [
@@ -6438,6 +6514,10 @@
               "resource": "Data",
               "amount": 1,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6458,7 +6538,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Destroy 1 Infrastructure opponent controls. opponent loses 2 Goods.",
+      "rulesText": "Destroy 1 Infrastructure opponent controls. opponent loses 2 Goods. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "Destroy 1 Infrastructure card. All Infrastructure within 1 link takes damage: -2 Capacity for 2 turns. Ground-based Fleet cards in the area are delayed 2 turns. Underground Bunker Vault survives.",
       "flavorText": "The ground splits, foundations crumble.",
       "effects": [
@@ -6476,6 +6556,10 @@
               "do": "loseGoods",
               "amount": 2,
               "who": "opponent"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6496,7 +6580,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 2 Workforce opponent controls for 2 turns.",
+      "rulesText": "Disable 2 Workforce opponent controls for 2 turns. Deal 1 damage to opposing Supply Chain Health.",
       "loreText": "All Worker-subtype Workforce cards go on strike for 2 turns (cannot be tapped or used). Specialists and Executives are unaffected. Pay +3 Capital to end strike 1 turn early.",
       "flavorText": "Talks broke down at 2 AM. The picket line formed at 6.",
       "effects": [
@@ -6510,6 +6594,10 @@
               "who": "opponent",
               "count": 2,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 1
             }
           ]
         }
@@ -6530,7 +6618,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Disable 3 Infrastructure opponent controls for 2 turns.",
+      "rulesText": "Disable 3 Infrastructure opponent controls for 2 turns. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All Automated cards lose their keyword for 3 turns (require Workforce to operate). Chip Fabrication Plant is shut down. Electronics-related Contracts cannot be fulfilled. Data generation reduced by half.",
       "flavorText": "A fingernail-sized component holds the world hostage.",
       "effects": [
@@ -6544,6 +6632,10 @@
               "who": "opponent",
               "count": 3,
               "turns": 2
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6564,7 +6656,7 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Destroy 1 Infrastructure opponent controls. Destroy 1 Fleet opponent controls. each player mills 2 cards.",
+      "rulesText": "Destroy 1 Infrastructure opponent controls. Destroy 1 Fleet opponent controls. each player mills 2 cards. Deal 3 damage to opposing Supply Chain Health.",
       "loreText": "Chain reaction: each player reveals top card of deck. If it's Infrastructure, that card is destroyed. If Fleet, it's delayed 3 turns. If Workforce, it's disabled 2 turns. If Operations, it's discarded. Repeats once for each Disruption already in play.",
       "flavorText": "One failure begets another, begets another, begets collapse.",
       "effects": [
@@ -6588,6 +6680,10 @@
               "do": "mill",
               "amount": 2,
               "who": "both"
+            },
+            {
+              "do": "damage",
+              "amount": 3
             }
           ]
         }
@@ -6610,7 +6706,7 @@
       "keywords": [
         "Legendary"
       ],
-      "rulesText": "Legendary. Destroy 1 Infrastructure with the highest cost each player control. Destroy 1 Fleet with the highest Capacity each player control.",
+      "rulesText": "Legendary. Destroy 1 Infrastructure with the highest cost each player control. Destroy 1 Fleet with the highest Capacity each player control. Deal 2 damage to opposing Supply Chain Health.",
       "loreText": "All players simultaneously lose their highest-cost Infrastructure card and highest-Capacity Fleet card. All Contracts in play have their deadlines extended by 2 turns. Cannot be prevented by any card effect except Force Majeure Clause.",
       "flavorText": "Beyond human control, beyond human preparation.",
       "effects": [
@@ -6631,6 +6727,10 @@
               "who": "both",
               "count": 1,
               "pick": "highestCapacity"
+            },
+            {
+              "do": "damage",
+              "amount": 2
             }
           ]
         }
@@ -6679,18 +6779,17 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; Capacity 4+ total; a Hub Infrastructure. Consumes 3 Goods. Reward 2 FP.",
+      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; a Hub Infrastructure. Consumes 4 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Fleet with total capacity of 4 or more routed through a Hub-type Infrastructure. Large volume, simple logistics.",
       "flavorText": "Feeding a nation across the ocean.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 4,
         "infrastructureSubtypes": [
           "Hub"
         ]
       },
-      "cargo": 3,
+      "cargo": 4,
       "fpReward": 2
     },
     {
@@ -6710,13 +6809,12 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; Capacity 3+ total; a Vehicle Fleet; a Storage Infrastructure. Consumes 3 Goods. Reward 3 FP.",
+      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; a Vehicle Fleet; a Storage Infrastructure. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Vehicle-subtype Fleet while Cold Storage Unit is in your Source Zone. Temperature-sensitive cargo requires specialized handling.",
       "flavorText": "2 to 8 degrees Celsius. Not one degree more.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 3,
         "fleetSubtypes": [
           "Vehicle"
         ],
@@ -6725,7 +6823,7 @@
         ]
       },
       "cargo": 3,
-      "fpReward": 3
+      "fpReward": 2
     },
     {
       "id": "189",
@@ -6744,14 +6842,14 @@
       "keywords": [
         "Rush"
       ],
-      "rulesText": "Rush. Delivery: Requires 2 Fleet in Customer Zone. Consumes 2 Goods. Reward 2 FP.",
+      "rulesText": "Rush. Delivery: Requires 2 Fleet in Customer Zone. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using 2 separate Fleet cards in the Customer Zone. Multiple deliveries happening in parallel to meet demand.",
       "flavorText": "Add to cart, buy now, where is my package?",
       "effects": [],
       "requirements": {
         "fleetCards": 2
       },
-      "cargo": 2,
+      "cargo": 3,
       "fpReward": 2
     },
     {
@@ -6771,20 +6869,17 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; Capacity 5+ total; a Vehicle Fleet; 2 Workforce. Consumes 4 Goods. Reward 3 FP.",
+      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; Capacity 4+ total; 2 Workforce. Consumes 4 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Vehicle-subtype Fleet with capacity 5+ and at least 2 Workforce cards deployed. Heavy logistics requiring manpower and heavy vehicles.",
       "flavorText": "Failure is not an option. Literally.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 5,
-        "fleetSubtypes": [
-          "Vehicle"
-        ],
+        "fleetCapacity": 4,
         "workforce": 2
       },
       "cargo": 4,
-      "fpReward": 3
+      "fpReward": 2
     },
     {
       "id": "191",
@@ -6803,19 +6898,18 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; a Speed 2+ Fleet; a Specialist Workforce. Consumes 2 Goods. Reward 2 FP.",
+      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; a Specialist Workforce. Consumes 2 Goods. Reward 1 FP.",
       "loreText": "Deliver using a Fleet with Speed 2+ while you have at least 1 Workforce with 'Specialist' subtype deployed. Careful handling by trained professionals.",
       "flavorText": "Handle as if it were made of dreams and crystal.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetSpeed": 2,
         "workforceSubtypes": [
           "Specialist"
         ]
       },
       "cargo": 2,
-      "fpReward": 2
+      "fpReward": 1
     },
     {
       "id": "192",
@@ -6832,22 +6926,18 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; Capacity 4+ total; an Air Fleet; a Digital Infrastructure. Consumes 3 Goods. Reward 3 FP.",
+      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; an Air Fleet. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using an Air-subtype Fleet with capacity 4+ while a Digital-type Infrastructure is in play. High-tech coordination for a worldwide product launch.",
       "flavorText": "Midnight launches across every timezone.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 4,
         "fleetSubtypes": [
           "Air"
-        ],
-        "infrastructureSubtypes": [
-          "Digital"
         ]
       },
       "cargo": 3,
-      "fpReward": 3
+      "fpReward": 2
     },
     {
       "id": "193",
@@ -6866,15 +6956,15 @@
       "keywords": [
         "Rush"
       ],
-      "rulesText": "Rush. Delivery: Requires 1 Fleet in Customer Zone. Consumes 1 Goods. Reward 2 FP.",
+      "rulesText": "Rush. Delivery: Requires 1 Fleet in Customer Zone. Consumes 2 Goods. Reward 1 FP.",
       "loreText": "Deliver using any Fleet card. No special requirements - just get supplies to those in need. The simplest contract with the greatest impact.",
       "flavorText": "When profit pauses for compassion.",
       "effects": [],
       "requirements": {
         "fleetCards": 1
       },
-      "cargo": 1,
-      "fpReward": 2
+      "cargo": 2,
+      "fpReward": 1
     },
     {
       "id": "194",
@@ -6891,18 +6981,17 @@
       },
       "stats": null,
       "keywords": [],
-      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; a Speed 2+ Fleet; a Storage Infrastructure. Consumes 2 Goods. Reward 2 FP.",
+      "rulesText": "Delivery: Requires 1 Fleet in Customer Zone; a Storage Infrastructure. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Fleet with Speed 2+ and a Storage-type Infrastructure in your Source Zone. Regular deliveries need reliable storage and moderate speed.",
       "flavorText": "Monthly surprises, quarterly revenue.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetSpeed": 2,
         "infrastructureSubtypes": [
           "Storage"
         ]
       },
-      "cargo": 2,
+      "cargo": 3,
       "fpReward": 2
     },
     {
@@ -6922,20 +7011,19 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; Capacity 3+ total; a Ship Fleet; 2 Workforce. Consumes 3 Goods. Reward 3 FP.",
+      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; a Ship Fleet; 2 Workforce. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Ship-subtype Fleet with capacity 3+ and at least 2 Workforce cards deployed. Hazardous materials demand specialized vessels and trained crews.",
       "flavorText": "Safely moving what others fear to touch.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 3,
         "fleetSubtypes": [
           "Ship"
         ],
         "workforce": 2
       },
       "cargo": 3,
-      "fpReward": 3
+      "fpReward": 2
     },
     {
       "id": "196",
@@ -6954,19 +7042,16 @@
       "keywords": [
         "Rush"
       ],
-      "rulesText": "Rush. Delivery: Requires 1 Fleet in Customer Zone; a Speed 4+ Fleet; a Hub Infrastructure. Consumes 3 Goods. Reward 4 FP.",
+      "rulesText": "Rush. Delivery: Requires 1 Fleet in Customer Zone; a Speed 3+ Fleet. Consumes 3 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Fleet with Speed 5+ and a Hub-type Infrastructure in your Source Zone. Ultra-fast logistics requiring advanced distribution networks.",
       "flavorText": "One hour. Any destination. No excuses.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetSpeed": 4,
-        "infrastructureSubtypes": [
-          "Hub"
-        ]
+        "fleetSpeed": 3
       },
       "cargo": 3,
-      "fpReward": 4
+      "fpReward": 2
     },
     {
       "id": "197",
@@ -6985,23 +7070,21 @@
       "keywords": [
         "Specialized"
       ],
-      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; Capacity 5+ total; a Rail Fleet; a Facility Infrastructure; 3 Workforce. Consumes 4 Goods. Reward 4 FP.",
+      "rulesText": "Specialized. Delivery: Requires 1 Fleet in Customer Zone; a Rail Fleet; a Facility Infrastructure. Consumes 4 Goods. Reward 2 FP.",
       "loreText": "Deliver using a Rail-subtype Fleet with capacity 5+ while a Facility-type Infrastructure is in play and you have 3 Workforce cards deployed. Just-in-time manufacturing demands precise coordination.",
       "flavorText": "Precision timing. Zero buffer. Maximum efficiency.",
       "effects": [],
       "requirements": {
         "fleetCards": 1,
-        "fleetCapacity": 5,
         "fleetSubtypes": [
           "Rail"
         ],
         "infrastructureSubtypes": [
           "Facility"
-        ],
-        "workforce": 3
+        ]
       },
       "cargo": 4,
-      "fpReward": 4
+      "fpReward": 2
     },
     {
       "id": "198",
@@ -7021,23 +7104,19 @@
         "Specialized",
         "Rush"
       ],
-      "rulesText": "Specialized, Rush. Delivery: Requires 2 Fleet in Customer Zone; a Speed 3+ Fleet; an Air Fleet; a Storage and Hub Infrastructure. Consumes 4 Goods. Reward 4 FP.",
+      "rulesText": "Specialized, Rush. Delivery: Requires 2 Fleet in Customer Zone; a Speed 3+ Fleet; a Storage Infrastructure. Consumes 4 Goods. Reward 2 FP.",
       "loreText": "Deliver using an Air-subtype Fleet with Speed 4+ while Cold Storage Unit and a Hub Infrastructure are both in your Source Zone. Cold chain air logistics on a global scale.",
       "flavorText": "The world's most important delivery.",
       "effects": [],
       "requirements": {
         "fleetCards": 2,
         "fleetSpeed": 3,
-        "fleetSubtypes": [
-          "Air"
-        ],
         "infrastructureSubtypes": [
-          "Storage",
-          "Hub"
+          "Storage"
         ]
       },
       "cargo": 4,
-      "fpReward": 4
+      "fpReward": 2
     },
     {
       "id": "199",
@@ -7056,17 +7135,16 @@
       "keywords": [
         "Legendary"
       ],
-      "rulesText": "Legendary. Delivery: Requires 3 Fleet in Customer Zone; Capacity 8+ total; 4 Workforce. Consumes 5 Goods. Reward 5 FP.",
+      "rulesText": "Legendary. Delivery: Requires 3 Fleet in Customer Zone; 3 Workforce. Consumes 5 Goods. Reward 3 FP.",
       "loreText": "Deliver using 3 Fleet cards in the Customer Zone with total capacity 8+ and at least 4 Workforce cards deployed. A massive recurring fulfillment operation requiring a fully staffed logistics army.",
       "flavorText": "The contract that never ends, the profits that never stop.",
       "effects": [],
       "requirements": {
         "fleetCards": 3,
-        "fleetCapacity": 8,
-        "workforce": 4
+        "workforce": 3
       },
       "cargo": 5,
-      "fpReward": 5
+      "fpReward": 3
     },
     {
       "id": "200",
@@ -7085,7 +7163,7 @@
       "keywords": [
         "Legendary"
       ],
-      "rulesText": "Legendary. Delivery: Requires 2 Fleet in Customer Zone; a Vehicle, Ship and Air Fleet; a Facility, Storage, Hub and Digital Infrastructure; 5 Workforce. Consumes 5 Goods. Reward 6 FP.",
+      "rulesText": "Legendary. Delivery: Requires 2 Fleet in Customer Zone; a Vehicle and Ship Fleet; a Facility and Hub Infrastructure; 3 Workforce. Consumes 5 Goods. Reward 3 FP.",
       "loreText": "Win condition: Control at least 1 Infrastructure of each subtype (Facility, Storage, Hub, Digital) and 1 Fleet of each subtype (Vehicle, Ship, Air, Rail, Drone, Fixed), plus 5 Workforce cards. The ultimate supply chain mastery challenge. Legendary - limit 1 per deck.",
       "flavorText": "The impossible made inevitable through flawless execution.",
       "effects": [],
@@ -7093,19 +7171,16 @@
         "fleetCards": 2,
         "fleetSubtypes": [
           "Vehicle",
-          "Ship",
-          "Air"
+          "Ship"
         ],
         "infrastructureSubtypes": [
           "Facility",
-          "Storage",
-          "Hub",
-          "Digital"
+          "Hub"
         ],
-        "workforce": 5
+        "workforce": 3
       },
       "cargo": 5,
-      "fpReward": 6
+      "fpReward": 3
     }
   ];
 }));

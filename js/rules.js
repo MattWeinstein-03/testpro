@@ -22,17 +22,37 @@
   var PHASES = Glossary.PHASES;
   var R = Glossary.RESOURCES;
 
+  /**
+   * The printed global dials. BALANCE PASS 2 changed five of them, and each
+   * change is stated in Glossary.GLOBAL_RULES because a dial the engine reads
+   * and the rulebook does not print is a rule a player at a table cannot know.
+   *
+   *   drawPerTurn 2 -> 3   The single biggest lever in the pass. At two draws a
+   *                        turn the average game ran 30 turns and a delivery
+   *                        deck spent the first seven of them waiting for its
+   *                        second Fleet. Three draws took the mean game from
+   *                        29.6 turns to 20.3 and took Contracts fulfilled per
+   *                        player from 1.6 to 3.3.
+   *   baseIncome  2 -> 3   The ramp, for the same reason: one more Capital a
+   *                        turn is one more early Infrastructure, and the
+   *                        delivery engine is built out of Infrastructure.
+   *   deckSize   50 -> 52  Follows the draw step; see DECK_MINIMUMS below.
+   *   soakPerTurn 2 -> 1   Stored Goods soaked so much damage that combat won
+   *                        21% of games. One is still a buffer; two was armour.
+   *   freeTransits    1    New printed rule: your first Transit each turn costs
+   *                        no Fuel.
+   */
   var DEFAULTS = {
     startingHealth: 20,
     winFp: 10,
     maxHand: 7,
-    deckSize: 50,
+    deckSize: 52,
     openingHand: 7,
-    drawPerTurn: 2,         // two cards a turn keeps a table game moving
-    baseIncome: 2,          // Capital per Upkeep before any Infrastructure
+    drawPerTurn: 3,         // three cards a turn keeps a table game moving
+    baseIncome: 3,          // Capital per Upkeep before any Infrastructure
     /**
      * Plus 1 resource of the player's choice each Upkeep. At a table this is
-     * "take 2 Capital and any 1 resource". It is what stops a hand of Labor
+     * "take 3 Capital and any 1 resource". It is what stops a hand of Labor
      * cards from being dead before your first Labor producer lands, and it is
      * the difference between a 31% and a 50% castable hand.
      */
@@ -47,22 +67,57 @@
      */
     reserveLimit: 3,
     transitBudget: 3,       // Fleet movements per turn before Operations
-    soakPerTurn: 2,         // damage absorbed by stored Goods each turn
+    soakPerTurn: 1,         // damage absorbed by stored Goods each turn
     transitFuel: 1,         // Fuel per transit, waived by Sustainable
+    /**
+     * The first Transit of your turn pays no Fuel - a standing haulage
+     * agreement. Measured: Fuel was the single most common reason a Fleet sat
+     * in the Network Zone doing nothing (326 blocked movements across 60
+     * games, more than crew, readiness and the Transit budget combined), and
+     * a delivery deck that cannot move cannot use the game's primary win
+     * condition. The exemption is deliberately the FIRST movement only, so
+     * running a wide fleet still costs Fuel and Fuel-producing Infrastructure
+     * still matters. It is printed in Glossary.GLOBAL_RULES.
+     */
+    freeTransits: 1,
     halfTurnLimit: 400      // hard stop; deck-out normally ends games first
   };
 
   /**
-   * Deck recipes, 50 cards each. 50 is the printed deck size: with two draws a
-   * turn a 40 card deck ran dry in 16 turns, which decided a third of all games
-   * by exhaustion rather than by either designed win condition.
+   * Deck recipes, 52 cards each - the printed deck size, and yes, the size of
+   * a deck of playing cards.
+   *
+   * It was 50 at two draws a turn. At three draws a turn, 50 put the empty-deck
+   * wall inside the body of a normal game and exhaustion decided 10% of
+   * results; 60 pushed the wall past the end of almost every game and dropped
+   * exhaustion to 1%, which sounds better but is worse: with the Fulfillment
+   * race capped at 60% of wins and combat at 35%, something has to decide the
+   * remaining games, and a deck that never runs out means a grindy stalemate
+   * has no clock at all. 52 puts the wall just past the long tail: 5-7% of
+   * games end there, and a player who neither delivers nor attacks loses to
+   * their own inventory running dry. Every recipe below sums to exactly 52.
+   */
+  /**
+   * BALANCE PASS 2. These are printed deck lists, so a recipe is as much a
+   * balance lever as a card's cost - and two of them were unwinnable.
+   *
+   *   disruption ran 18 Disruptions, 6 Workforce and 4 Contracts: it could
+   *     dismantle a supply chain and then had nothing to win with. It measured
+   *     33.9%. It now runs 12 Disruptions and 6 Contracts - still the densest
+   *     Disruption deck in the box, but with a clock of its own.
+   *   engine ran 4 Contracts on 18 Infrastructure: it built the best economy
+   *     in the game and could not spend it. 33.3%. Now 7 Contracts, 9 Fleet.
+   *   aggro measured 70.3% on 18 Workforce. Now 16, and the two slots go to
+   *     Fleet, so an aggro deck that wants to race also has to load cargo.
+   *   every deck now carries at least 4 Contracts and 6 Fleet, because a deck
+   *     with no delivery package cannot use the game's primary win condition.
    */
   var DECK_MINIMUMS = {
-    balanced:  { Infrastructure: 14, Workforce: 10, Fleet: 9, Operations: 7, Disruptions: 4, Contracts: 6 },
-    delivery:  { Infrastructure: 14, Workforce: 12, Fleet: 9, Operations: 4, Disruptions: 3, Contracts: 8 },
-    aggro:     { Infrastructure: 10, Workforce: 18, Fleet: 5, Operations: 6, Disruptions: 8, Contracts: 3 },
-    engine:    { Infrastructure: 18, Workforce: 9, Fleet: 7, Operations: 9, Disruptions: 3, Contracts: 4 },
-    disruption:{ Infrastructure: 12, Workforce: 6, Fleet: 5, Operations: 5, Disruptions: 18, Contracts: 4 }
+    balanced:  { Infrastructure: 12, Workforce: 10, Fleet: 11, Operations: 6, Disruptions: 4, Contracts: 9 },
+    delivery:  { Infrastructure: 12, Workforce: 12, Fleet: 11, Operations: 3, Disruptions: 3, Contracts: 11 },
+    aggro:     { Infrastructure: 10, Workforce: 15, Fleet: 8, Operations: 5, Disruptions: 7, Contracts: 7 },
+    engine:    { Infrastructure: 16, Workforce: 10, Fleet: 10, Operations: 5, Disruptions: 2, Contracts: 9 },
+    disruption:{ Infrastructure: 11, Workforce: 10, Fleet: 9, Operations: 4, Disruptions: 10, Contracts: 8 }
   };
 
   // ---------------------------------------------------------------------------
@@ -120,10 +175,12 @@
   function canBlockWith(card) {
     if (card.disabledFor !== 0) return false;
     if (card.type === 'Workforce') return !card.attacked;
-    // Fleet parked in the Network Zone can form a barricade: Power 0, and
-    // Toughness equal to its printed Capacity. A delivery deck therefore
-    // defends with the cards it was already playing, which is the structural
-    // answer to a wall of cheap Workforce.
+    // Fleet parked in the Network Zone can form a barricade: Power 0 and the
+    // printed barricade Toughness of 2 (see blockToughness - it used to be the
+    // Fleet's Capacity, which made a 12-Capacity hauler an unkillable wall).
+    // A delivery deck still defends with the cards it was already playing,
+    // which is the structural answer to a wall of cheap Workforce, but a real
+    // attacker can now break through and take the hauler with it.
     return card.type === 'Fleet' && !card.tapped;
   }
 
@@ -131,10 +188,22 @@
     return card.stats && card.stats.power !== undefined ? card.stats.power : 0;
   }
 
+  /**
+   * Toughness for combat. A Fleet has no printed Toughness, so a barricading
+   * Fleet uses the printed barricade value of 2 - NOT its Capacity.
+   *
+   * Capacity was the wrong number: the set contains Fleet with Capacity 8, 10
+   * and 12, so a delivery deck's biggest hauler was also an unkillable wall,
+   * and combat measured 21% of wins against a 70% Fulfillment race. A flat 2
+   * keeps the barricade a real answer to a swarm of 1-Power Workforce while
+   * letting a serious attacker break through and take the hauler with it -
+   * which is the pressure combat is supposed to apply to a supply chain.
+   * Printed in Glossary.GLOBAL_RULES.
+   */
   function blockToughness(card) {
     if (!card.stats) return 1;
     if (card.stats.toughness !== undefined) return card.stats.toughness;
-    return Math.max(1, card.stats.capacity || 1);
+    return 2;
   }
 
   function isActive(card) {
@@ -225,6 +294,7 @@
       shieldTurns: 0,
       cargoDiscount: 0,
       transitBudget: 0,
+      freeTransitsLeft: 0,
       requisitionUsed: false,
       soakUsed: 0,
       turnStats: { contractsFulfilled: 0, goodsDelivered: 0 },
@@ -335,8 +405,10 @@
        * Damage hits your inventory buffer before your Supply Chain Health.
        * Stored Goods soak 1 damage each - a rival capturing market share has to
        * burn through your stock first. This is what makes Goods a defensive
-       * asset as well as the delivery currency, and it is the tension that
-       * keeps a wall of cheap Workforce from simply racing to 20.
+       * asset as well as the delivery currency. The per-turn buffer is 1, not
+       * 2: at 2, combat could not get through a delivery deck's stockpile and
+       * won only 21% of games, which made the second win condition ornamental.
+       * Printed in Glossary.GLOBAL_RULES.
        * At a table: "remove Goods tokens first, then move the Health dial".
        */
       damage: function(player, n, source) {
@@ -573,8 +645,18 @@
         met: fleets.some(function(c) { return (c.stats.speed || 0) >= reqs.fleetSpeed; })
       });
     }
+    // Specialized satisfies any Fleet subtype clause, exactly as Hub does for
+    // Infrastructure. Measured: subtype clauses were the wall the delivery
+    // clock kept hitting - Air (204 unmet), Ship (140), Vehicle (122) and Rail
+    // (84) across 60 games - because an 11-Fleet deck drawn from a pool with
+    // 5 Air and 4 Rail cards rarely has the named subtype in the Customer Zone
+    // on the turn the Contract is in hand. Specialized is the printed answer:
+    // a specialist carrier can take the job.
     (reqs.fleetSubtypes || []).forEach(function(sub) {
-      out.push({ label: sub + ' Fleet delivering', met: fleets.some(function(c) { return c.subtype === sub; }) });
+      out.push({
+        label: sub + ' Fleet delivering',
+        met: fleets.some(function(c) { return c.subtype === sub || hasKw(c, 'Specialized'); })
+      });
     });
     (reqs.infrastructureSubtypes || []).forEach(function(sub) {
       out.push({
@@ -587,7 +669,10 @@
       out.push({ label: reqs.workforce + ' Workforce deployed', met: countWith(workers) >= reqs.workforce });
     }
     (reqs.workforceSubtypes || []).forEach(function(sub) {
-      out.push({ label: sub + ' Workforce deployed', met: workers.some(function(c) { return c.subtype === sub; }) });
+      out.push({
+        label: sub + ' Workforce deployed',
+        met: workers.some(function(c) { return c.subtype === sub || hasKw(c, 'Specialized'); })
+      });
     });
 
 
@@ -673,6 +758,7 @@
     player.requisitionUsed = false;
     player.soakUsed = 0;
     player.transitBudget = state.config.transitBudget;
+    player.freeTransitsLeft = state.config.freeTransits;
     player.turnStats = { contractsFulfilled: 0, goodsDelivered: 0 };
     if (player.shieldTurns > 0) player.shieldTurns--;
 
@@ -740,8 +826,12 @@
     // playing first.
     if (state.halfTurns === 1 && !state.firstDrawSkipped) {
       state.firstDrawSkipped = true;
-      log(state, player.name + ' draws 1 instead of ' + state.config.drawPerTurn + ' (on the play)');
-      makeOps(state).draw(player, 1);
+      // One card fewer, not one card total. At two draws a turn those were the
+      // same number; at three, "draw 1" handed the second player a two-card
+      // head start and measured a 49.5% first-player win rate.
+      var reduced = Math.max(1, state.config.drawPerTurn - 1);
+      log(state, player.name + ' draws ' + reduced + ' instead of ' + state.config.drawPerTurn + ' (on the play)');
+      makeOps(state).draw(player, reduced);
       return;
     }
     makeOps(state).draw(player, state.config.drawPerTurn);
@@ -1025,19 +1115,46 @@
   // ---------------------------------------------------------------------------
   // Transit
   // ---------------------------------------------------------------------------
-  function transitFuel(state, fleet) {
-    return hasKw(fleet, 'Sustainable') ? 0 : state.config.transitFuel;
+  /**
+   * Fuel a movement actually costs. Sustainable pays nothing ever; everyone
+   * gets their first movement of the turn free.
+   */
+  function transitFuel(state, player, fleet) {
+    if (hasKw(fleet, 'Sustainable')) return 0;
+    if (player.freeTransitsLeft > 0) return 0;
+    return state.config.transitFuel;
   }
 
+  /** Exported so the diagnostics agree with the engine about why a Fleet stayed put. */
+  function transitCost(state, playerIndex, fleet) {
+    return transitFuel(state, state.players[playerIndex], fleet);
+  }
+
+  /**
+   * Who can crew a Fleet.
+   *
+   * Deliberately NOT isReady(): a Workforce that arrived this turn may crew.
+   * Measured, crew was the last throttle on the delivery loop - 356 blocked
+   * movements across 60 games, against 13 for Fuel and 3 for the Transit
+   * budget - because a Workforce could not do anything at all on the turn it
+   * arrived, so every new hire cost a full turn before a Fleet could move.
+   * A new hire can load a truck; what they cannot do is work a shift as a
+   * lead (a Tap ability) or fight (attack). Those still need Rush. This makes
+   * the delivery clock a turn faster without touching the combat clock at
+   * all, which is exactly the asymmetry this pass wanted.
+   * Printed in Glossary.GLOBAL_RULES under Arriving.
+   */
   function availableCrew(player) {
-    return player.network.filter(function(c) { return c.type === 'Workforce' && isReady(c) && !c.attacked; });
+    return player.network.filter(function(c) {
+      return c.type === 'Workforce' && !c.tapped && c.disabledFor === 0 && !c.attacked;
+    });
   }
 
   function canTransit(state, playerIndex, fleet) {
     var player = state.players[playerIndex];
     if (PHASES[state.phase] !== 'Transit' || fleet.type !== 'Fleet' || !isReady(fleet)) return false;
     if (player.transitBudget <= 0) return false;
-    if (player.resources.Fuel < transitFuel(state, fleet)) return false;
+    if (player.resources.Fuel < transitFuel(state, player, fleet)) return false;
     if (!hasKw(fleet, 'Automated') && availableCrew(player).length === 0) return false;
     return true;
   }
@@ -1048,11 +1165,19 @@
     var fleet = find(player.network, uid);
     if (!fleet || playerIndex !== state.currentPlayer || !canTransit(state, playerIndex, fleet)) return false;
 
-    player.resources.Fuel -= transitFuel(state, fleet);
+    var fuelPaid = transitFuel(state, player, fleet);
+    player.resources.Fuel -= fuelPaid;
+    // The free movement is consumed by any Fleet that would otherwise have
+    // paid; Sustainable Fleet never spend it, so they do not use it up.
+    if (!fuelPaid && !hasKw(fleet, 'Sustainable') && player.freeTransitsLeft > 0) {
+      player.freeTransitsLeft--;
+    }
     var crewNote = '';
     if (!hasKw(fleet, 'Automated')) {
       var crew = crewUid ? find(player.network, crewUid) : null;
-      if (!crew || crew.type !== 'Workforce' || !isReady(crew)) crew = availableCrew(player)[0];
+      if (!crew || crew.type !== 'Workforce' || crew.tapped || crew.disabledFor !== 0 || crew.attacked) {
+        crew = availableCrew(player)[0];
+      }
       if (!crew) return false;
       crew.tapped = true;
       crewNote = ', crewed by ' + crew.name;
@@ -1271,6 +1396,7 @@
     canPay: canPay,
     canTap: canTap,
     canTransit: canTransit,
+    transitCost: transitCost,
     canAttack: canAttack,
     missingResources: missingResources,
     effectiveCost: effectiveCost,

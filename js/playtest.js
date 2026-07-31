@@ -84,7 +84,8 @@
 
   function transitFleet(uid) {
     dispatch(findAction(function(a) { return a.k === 'transit' && sameUid(a.uid, uid); }),
-      'That Fleet cannot transit: it needs Fuel, an available crew, a Transit action, and to be untapped.');
+      'That Fleet cannot transit: it needs an available crew, a Transit action and to be untapped. ' +
+      'Your first Transit each turn costs no Fuel; every later one costs 1.');
   }
 
   function tapCard(uid) {
